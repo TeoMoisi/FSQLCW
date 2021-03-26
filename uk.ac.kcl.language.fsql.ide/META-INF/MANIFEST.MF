@@ -1,0 +1,12 @@
+Manifest-Version: 1.0
+Automatic-Module-Name: uk.ac.kcl.language.fsql.ide
+Bundle-ManifestVersion: 2
+Bundle-Name: uk.ac.kcl.language.fsql.ide
+Bundle-Vendor: My Company
+Bundle-Version: 1.0.0.qualifier
+Bundle-SymbolicName: uk.ac.kcl.language.fsql.ide; singleton:=true
+Bundle-ActivationPolicy: lazy
+Require-Bundle: uk.ac.kcl.language.fsql,
+ org.eclipse.xtext.ide,
+ org.eclipse.xtext.xbase.ide
+Bundle-RequiredExecutionEnvironment: JavaSE-11

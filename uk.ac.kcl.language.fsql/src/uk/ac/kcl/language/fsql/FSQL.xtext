@@ -1,0 +1,9 @@
+grammar uk.ac.kcl.language.fsql.FSQL with org.eclipse.xtext.common.Terminals
+
+generate fSQL "http://www.ac.uk/kcl/language/fsql/FSQL"
+
+Model:
+	greetings+=Greeting*;
+	
+Greeting:
+	'Hello' name=ID '!';
