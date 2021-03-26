@@ -2,8 +2,177 @@ grammar uk.ac.kcl.language.fsql.FSQL with org.eclipse.xtext.common.Terminals
 
 generate fSQL "http://www.ac.uk/kcl/language/fsql/FSQL"
 
-Model:
-	greetings+=Greeting*;
+import "http://www.eclipse.org/emf/2002/Ecore" as ecore
+
+// create db Name
+// use db Name
+//
+// create table Name { 
+// 		colName: colType as primary key => e.g. id: int/string/float/bool
+//		colName: references tableName
+//		(c1, c2) as primary key => compound primary key
+// }
+// 
+// create table Name extends SuperName {
+// 		colName: colType => e.g. id: int/string/float/bool
+//		colName: references tableName
+// }
+//
+// TableName.addRow({colName: colValue, ..})
+// TableName.addRows([{colName: colValue, ..}, ...])
+//
+// TableName.delete() => deletes all entries from a table
+//
+// TableName.where(query).delete()
+//
+// TabelName.where(query).update({colName: newValue, ..})
+// 
+// TableName.update({colName: newValue, ..) => updates all entries from a table
+//
+// var result = TableName.where(query).select()[.top() | .min() | .max() | .sum() | .count() 
+// | .groupBy(colName) | .orderBy(colName, order = 'asc'|'desc') | HAVING(cond) ]
+//
+// result.select() etc. 
+//
+// JOINS:
+// TableName1.innerJoin(TableName2).on(cond).where(query).select()
+// TableName1.leftJoin(TableName2).on(cond).where(query).select()
+// TableName1.rightJoin(TableName2).on(cond).where(query).select()
+// TableName1.fullJoin(TableName2).on(cond).where(query).select()
+
+//FSQL:
+//	table+=CreateTable*
+//;
+//
+//CreateTable:
+//	'CREATE' 'TABLE' name=ID '{'
+//		columns+=SimpleDeclaration*
+//	 '}'
+//;
+//
+//SimpleDeclaration:
+//	name=ID ':' type=ColumnType (';'*)
+//;
+//
+//enum ColumnType:
+//	INT | FLOAT | STRING | BOOL
+//;
+
+
+
+FSQL:
+	dbStatements+=DatabaseStatements*
+	tableStatements+=TableStatements*
+;
+
+DatabaseStatements:
+	CreateDB | UseDB
+;
+
+// I have also added the database statements because we can change the db or create a new one
+TableStatements:
+	CreateTable | TableStatement
+;
+
+TableStatement:
+	AddRows | AddRow | DropTable
+;
 	
-Greeting:
-	'Hello' name=ID '!';
+CreateDB:
+	'create' 'database' name=ID
+;
+	
+UseDB:
+	'use' 'database' name=ID
+;
+
+CreateTable:
+	'create' 'table' name=ID '{'
+		columns+=ColumnDeclaration*
+	 '}'
+;
+
+TableDeclaration:
+	var = [CreateTable]
+;
+
+DropTable:
+	table=TableDeclaration '.' 'drop()' ';'
+;
+
+ColumnDeclaration:
+	SimpleDeclaration | PrimaryKey | ForeignKey | CompositeKey
+;
+
+SimpleDeclaration:
+	name=ID ':' type=ColumnType (';'*)
+;
+
+PrimaryKey:
+	name=ID ':' type=ColumnType 'as' 'primary' 'key' (';'*)
+;
+
+ForeignKey:
+	name=ID ':' type=ColumnType 'references' table+=TableDeclaration (';'*)
+;
+
+ColumnNameReference:
+	var = [ColumnDeclaration]
+;
+
+CompositeKey:
+	'(' col1=ColumnNameReference ',' col2=ColumnNameReference (',' col+=ColumnNameReference)* ')' 'as' 'primary' 'key' (';'*)
+;
+
+enum ColumnType:
+	INT | FLOAT | STRING | BOOL
+;
+
+ColumnAddition:
+	AddColumn | AddColumns
+;
+
+AddColumn: 
+	table+=TableDeclaration '.' 'addColumn' '(' column+=ColumnDeclaration ');'
+;
+
+AddColumns: 
+	table+=TableDeclaration '.' 'addColumns' '(' '{' col1+=ColumnDeclaration '}' ',' '{' col2+=ColumnDeclaration '}' (',' '{' columns+=ColumnDeclaration '}')* ');'
+;
+
+// the problem here is that we cannot reference column outside of the table because it was only declared there
+AddRow:
+	table+=TableDeclaration '.' 'addRow' '(' name=ID ':' value=ColumnValueType');'
+;
+
+RowValueDeclaration:
+	'{' name=ID ':' value=ColumnValueType '}' (',' | ');')
+;
+
+AddRows:
+	table+=TableDeclaration '.' 'addRows' '(' rows+=RowValueDeclaration+
+;
+
+ColumnValueType returns Expression:
+	IntType | RealType | StringType | BoolType
+;
+
+IntType:
+	val = INT
+;
+
+RealType:
+	val = REAL
+;
+
+REAL returns ecore::EFloat hidden():
+	INT? "." INT
+;
+
+StringType:
+	val = STRING
+;
+
+BoolType :
+	val = "true" | {BoolType} "false"
+;
