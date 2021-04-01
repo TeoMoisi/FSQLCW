@@ -75,7 +75,7 @@ TableStatements:
 ;
 
 TableStatement:
-	AddRows | AddRow | DropTable
+	AddRows | AddRow | DropTable | DeleteEntries
 ;
 	
 CreateDB:
@@ -98,6 +98,10 @@ TableDeclaration:
 
 DropTable:
 	table=TableDeclaration '.' 'drop()' ';'
+;
+
+DeleteEntries:
+	table=TableDeclaration '.' 'deleteAll()' ';'
 ;
 
 ColumnDeclaration:
