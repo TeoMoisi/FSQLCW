@@ -75,7 +75,7 @@ TableStatements:
 ;
 
 TableStatement:
-	AddRows | AddRow | DropTable | DeleteEntries
+	AddRows | AddRow | DropTable | DeleteEntries | DeleteWithQuery
 ;
 	
 CreateDB:
@@ -155,6 +155,19 @@ RowValueDeclaration:
 
 AddRows:
 	table+=TableDeclaration '.' 'addRows' '(' rows+=RowValueDeclaration+
+;
+
+DeleteWithQuery:
+	table+=TableDeclaration '.' 'where(' query+=Query* ').delete()'
+;
+
+
+Query:
+	name=ID condition+=Condition* value=ColumnValueType
+;
+
+Condition:
+	'<' | '>' | '=' | '<=' | '>='
 ;
 
 ColumnValueType returns Expression:
