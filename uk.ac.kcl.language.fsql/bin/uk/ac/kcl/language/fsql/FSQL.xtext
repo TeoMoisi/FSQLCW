@@ -78,7 +78,7 @@ TableDeclaration:
 ;
 
 DropTable:
-	table=TableDeclaration '.' 'drop()' ';'
+	table=TableDeclaration '.' 'drop()'
 ;
 
 
@@ -120,27 +120,27 @@ AlterTable:
 ;
 
 AddColumn: 
-	table+=TableDeclaration '.' 'addColumn' '(' column+=ColumnDeclaration ');'
+	table+=TableDeclaration '.' 'addColumn' '(' column+=ColumnDeclaration ')'
 ;
 
 AddColumns: 
-	table+=TableDeclaration '.' 'addColumns' '(' '{' col1+=ColumnDeclaration '}' ',' '{' col2+=ColumnDeclaration '}' (',' '{' columns+=ColumnDeclaration '}')* ');'
+	table+=TableDeclaration '.' 'addColumns' '(' '{' col1+=ColumnDeclaration '}' ',' '{' col2+=ColumnDeclaration '}' (',' '{' columns+=ColumnDeclaration '}')* ')'
 ;
 
 DropColumn:
-	table+=TableDeclaration '.' 'dropColumn' '(' col=ColumnNameDeclaration ');'
+	table+=TableDeclaration '.' 'dropColumn' '(' col=ColumnNameDeclaration ')'
 ;
 
 DropColumns:
-	table+=TableDeclaration '.' 'dropColumns' '(' coumns=ColumnNameDeclaration  (',' columns+=ColumnNameDeclaration)* ');'
+	table+=TableDeclaration '.' 'dropColumns' '(' column=ColumnNameDeclaration  (',' columns+=ColumnNameDeclaration)* ')'
 ;
 
 ModifyColumns:
-	table+=TableDeclaration '.' 'modify' '(' '{' col1+=ColumnDeclaration '}' ',' '{' col2+=ColumnDeclaration '}' (',' '{' columns+=ColumnDeclaration '}')* ');'
+	table+=TableDeclaration '.' 'modify' '(' '{' col1+=ColumnDeclaration '}' ',' '{' col2+=ColumnDeclaration '}' (',' '{' columns+=ColumnDeclaration '}')* ')'
 ;
 
 AddRow:
-	table+=TableDeclaration '.' 'addRow' '(' name=ID ':' value=ColumnValueType');'
+	table+=TableDeclaration '.' 'addRow' '(' name=ID ':' value=ColumnValueType')'
 ;
 
 RowValueDeclaration:
@@ -169,11 +169,15 @@ TableColumnsCondition:
 ;
 
 Join:
-	table1=TableDeclaration '.' joinType=JoinType '(' table2=TableDeclaration ')' '.' 'on' '(' joinCondition+= TableColumnsCondition ')' '.' 'select()'
+	table1=TableDeclaration '.' joinType=JoinType '(' table2=TableDeclaration ')' '.' 'on' '(' joinCondition+= TableColumnsCondition ')' '.' selection=Select
 ;
 
 enum JoinType:
-	innerJoin | leftJoin | rightJoin | FullJoin
+	innerJoin | leftJoin | rightJoin | fullJoin
+;
+
+Select:
+	'select' '(' column=ColumnNameDeclaration  (',' columns+=ColumnNameDeclaration)* ')'
 ;
 
 enum ConditionOperator:
