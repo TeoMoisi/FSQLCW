@@ -30,3 +30,6 @@ create table Table2{id:INT;name:STRING}
 
 Table1.innerJoin(Table2).on(Table1.name = Table2.name).where(col1 eq 1).select(name, col1)
 Table1.leftJoin(Table2).on(Table1.name = Table2.name).select(name,col1)
+
+
+Table1.where(col1 ne 0).select(col1, name)

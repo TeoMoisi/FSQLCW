@@ -56,7 +56,7 @@ TableStatements:
 ;
 
 TableStatement:
-	AddRows | AddRow | DropTable | Delete | Update | AlterTable | Join
+	AddRows | AddRow | DropTable | Delete | Update | AlterTable | Join | Query
 ;
 	
 CreateDB:
@@ -183,8 +183,16 @@ Select:
 	'select' '(' column=ColumnNameDeclaration  (',' columns+=ColumnNameDeclaration)* ')'
 ;
 
+Query:
+	table=TableDeclaration '.' whereClause=WhereClause '.' select=Select (queryStmts=QueryStatement '()')? 
+;
+
+enum QueryStatement:
+	groupBy | orderBy
+;
+
 enum ConditionOperator:
-	lt | gt | eq | lte | gte
+	lt | gt | eq | lte | gte | ne
 ;
 
 ColumnValueType returns Expression:
