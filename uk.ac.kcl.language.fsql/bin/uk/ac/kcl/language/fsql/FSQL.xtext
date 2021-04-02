@@ -40,25 +40,6 @@ import "http://www.eclipse.org/emf/2002/Ecore" as ecore
 // TableName1.rightJoin(TableName2).on(cond).where(query).select()
 // TableName1.fullJoin(TableName2).on(cond).where(query).select()
 
-//FSQL:
-//	table+=CreateTable*
-//;
-//
-//CreateTable:
-//	'CREATE' 'TABLE' name=ID '{'
-//		columns+=SimpleDeclaration*
-//	 '}'
-//;
-//
-//SimpleDeclaration:
-//	name=ID ':' type=ColumnType (';'*)
-//;
-//
-//enum ColumnType:
-//	INT | FLOAT | STRING | BOOL
-//;
-
-
 
 FSQL:
 	dbStatements+=DatabaseStatements*
@@ -75,7 +56,7 @@ TableStatements:
 ;
 
 TableStatement:
-	AddRows | AddRow | DropTable | Delete | Update | AlterTable
+	AddRows | AddRow | DropTable | Delete | Update | AlterTable | Join
 ;
 	
 CreateDB:
@@ -181,6 +162,18 @@ Delete:
 
 Condition:
 	name = ID condition = ConditionOperator value = ColumnValueType
+;
+
+TableColumnsCondition:
+	table1=TableDeclaration '.' column1=ColumnNameDeclaration '=' table2=TableDeclaration '.' column2=ColumnNameDeclaration
+;
+
+Join:
+	table1=TableDeclaration '.' joinType=JoinType '(' table2=TableDeclaration ')' '.' 'on' '(' joinCondition+= TableColumnsCondition ')' '.' 'select()'
+;
+
+enum JoinType:
+	innerJoin | leftJoin | rightJoin | FullJoin
 ;
 
 enum ConditionOperator:
