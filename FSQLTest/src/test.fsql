@@ -2,6 +2,8 @@ create database DB
 
 use database DB
 
+// create table Table1{{col1:FLOAT},{col2: STRING}}
+
 create table Table1{col1:INT;col2:STRING}
 
 Table1.where(col2 lt 6).delete()
@@ -13,3 +15,12 @@ Table1.delete()
 Table1.update({col1:5},{col2:'teo'});
 
 Table1.where(col1 gt 8).update({col1:7});
+
+Table1.addColumn(col3:BOOL);
+
+Table1.addColumns({col4:FLOAT},{(col3,col4) as primary key },{col5:INT});
+
+Table1.dropColumn(col3);
+Table1.dropColumns(col4,col3);
+
+Table1.modify({col4:BOOL},{col5:STRING});
