@@ -1,0 +1,15 @@
+create database DB
+
+use database DB
+
+create table Table1{col1:INT;col2:STRING}
+
+Table1.where(col2 lt 6).delete()
+
+Table1.where(col1 eq 1).delete()
+
+Table1.delete()
+
+Table1.update({col1:5},{col2:'teo'});
+
+Table1.where(col1 gt 8).update({col1:7});
