@@ -30,7 +30,7 @@ import "http://www.eclipse.org/emf/2002/Ecore" as ecore
 // TableName.update({colName: newValue, ..) => updates all entries from a table
 //
 // var result = TableName.where(query).select()[.top() | .min() | .max() | .sum() | .count() 
-// | .groupBy(colName) | .orderBy(colName, order = 'asc'|'desc') | HAVING(cond) ]
+// |.groupBy(colName) | .orderBy(colName, order = 'asc'|'desc') | HAVING(cond) ]
 //
 // result.select() etc. 
 //
@@ -75,7 +75,7 @@ TableStatements:
 ;
 
 TableStatement:
-	AddRows | AddRow | DropTable | DeleteEntries | DeleteWithQuery
+	AddRows | AddRow | DropTable | Delete | Update
 ;
 	
 CreateDB:
@@ -157,17 +157,21 @@ AddRows:
 	table+=TableDeclaration '.' 'addRows' '(' rows+=RowValueDeclaration+
 ;
 
-DeleteWithQuery:
-	table+=TableDeclaration '.' 'where(' query+=Query* ').delete()'
+Update:
+	table+=TableDeclaration ('.' 'where' '(' query+=Condition  (',' query+=Condition )* ')' )? '.' 'update(' rows+=RowValueDeclaration+
 ;
 
-
-Query:
-	name=ID condition+=Condition* value=ColumnValueType
+Delete:
+	table+=TableDeclaration ('.' 'where' '(' query+=Condition  (',' query+=Condition )* ')' )? '.' 'delete()'
 ;
+
 
 Condition:
-	'<' | '>' | '=' | '<=' | '>='
+	name = ID condition = ConditionOperator value = ColumnValueType
+;
+
+enum ConditionOperator:
+	lt | gt | eq | lte | gte
 ;
 
 ColumnValueType returns Expression:
