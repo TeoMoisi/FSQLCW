@@ -28,5 +28,5 @@ Table1.modify({col4:BOOL},{col5:STRING})
 create table Table2{id:INT;name:STRING}
 
 
-Table1.innerJoin(Table2).on(Table1.name = Table2.name).select(Name,col1)
-Table1.leftJoin(Table2).on(Table1.name = Table2.name).select(Name,col1)
+Table1.innerJoin(Table2).on(Table1.name = Table2.name).where(col1 eq 1).select(name, col1)
+Table1.leftJoin(Table2).on(Table1.name = Table2.name).select(name,col1)

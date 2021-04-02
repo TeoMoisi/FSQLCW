@@ -152,13 +152,16 @@ AddRows:
 ;
 
 Update:
-	table+=TableDeclaration ('.' 'where' '(' query+=Condition  (',' query+=Condition )* ')' )? '.' 'update(' rows+=RowValueDeclaration+
+	table+=TableDeclaration ('.' whereClause=WhereClause )? '.' 'update(' rows+=RowValueDeclaration+
 ;
 
 Delete:
-	table+=TableDeclaration ('.' 'where' '(' query+=Condition  (',' query+=Condition )* ')' )? '.' 'delete()'
+	table+=TableDeclaration ('.' whereClause=WhereClause )? '.' 'delete()'
 ;
 
+WhereClause:
+	'where' '(' query+=Condition  (',' query+=Condition )* ')'
+;
 
 Condition:
 	name = ID condition = ConditionOperator value = ColumnValueType
@@ -169,7 +172,7 @@ TableColumnsCondition:
 ;
 
 Join:
-	table1=TableDeclaration '.' joinType=JoinType '(' table2=TableDeclaration ')' '.' 'on' '(' joinCondition+= TableColumnsCondition ')' '.' selection=Select
+	table1=TableDeclaration '.' joinType=JoinType '(' table2=TableDeclaration ')' '.' 'on' '(' joinCondition+= TableColumnsCondition ')' ('.' whereClause=WhereClause )?  '.' selection=Select
 ;
 
 enum JoinType:
