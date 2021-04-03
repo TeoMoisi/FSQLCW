@@ -30,7 +30,7 @@ import "http://www.eclipse.org/emf/2002/Ecore" as ecore
 // TableName.update({colName: newValue, ..) => updates all entries from a table
 //
 // var result = TableName.where(query).select()[.top() | .min() | .max() | .sum() | .count() 
-// | .groupBy(colName) | .orderBy(colName, order = 'asc'|'desc') | HAVING(cond) ]
+// |.groupBy(colName) | .orderBy(colName, order = 'asc'|'desc') | HAVING(cond) ]
 //
 // result.select() etc. 
 //
@@ -39,25 +39,6 @@ import "http://www.eclipse.org/emf/2002/Ecore" as ecore
 // TableName1.leftJoin(TableName2).on(cond).where(query).select()
 // TableName1.rightJoin(TableName2).on(cond).where(query).select()
 // TableName1.fullJoin(TableName2).on(cond).where(query).select()
-
-//FSQL:
-//	table+=CreateTable*
-//;
-//
-//CreateTable:
-//	'CREATE' 'TABLE' name=ID '{'
-//		columns+=SimpleDeclaration*
-//	 '}'
-//;
-//
-//SimpleDeclaration:
-//	name=ID ':' type=ColumnType (';'*)
-//;
-//
-//enum ColumnType:
-//	INT | FLOAT | STRING | BOOL
-//;
-
 
 
 FSQL:
@@ -75,7 +56,7 @@ TableStatements:
 ;
 
 TableStatement:
-	AddRows | AddRow | DropTable
+	AddRows | AddRow | DropTable | Delete | Update | AlterTable | Join | Query
 ;
 	
 CreateDB:
@@ -86,9 +67,9 @@ UseDB:
 	'use' 'database' name=ID
 ;
 
-CreateTable:
+CreateTable :
 	'create' 'table' name=ID '{'
-		columns+=ColumnDeclaration*
+		column=ColumnDeclaration (';' columns+=ColumnDeclaration)*
 	 '}'
 ;
 
@@ -97,23 +78,28 @@ TableDeclaration:
 ;
 
 DropTable:
-	table=TableDeclaration '.' 'drop()' ';'
+	table=TableDeclaration '.' 'drop()'
 ;
+
 
 ColumnDeclaration:
 	SimpleDeclaration | PrimaryKey | ForeignKey | CompositeKey
 ;
 
+ColumnNameDeclaration:
+	name=ID
+;
+
 SimpleDeclaration:
-	name=ID ':' type=ColumnType (';'*)
+	name=ID ':' type=ColumnType
 ;
 
 PrimaryKey:
-	name=ID ':' type=ColumnType 'as' 'primary' 'key' (';'*)
+	name=ID ':' type=ColumnType 'as' 'primary' 'key'
 ;
 
 ForeignKey:
-	name=ID ':' type=ColumnType 'references' table+=TableDeclaration (';'*)
+	name=ID ':' type=ColumnType 'references' table+=TableDeclaration
 ;
 
 ColumnNameReference:
@@ -121,28 +107,40 @@ ColumnNameReference:
 ;
 
 CompositeKey:
-	'(' col1=ColumnNameReference ',' col2=ColumnNameReference (',' col+=ColumnNameReference)* ')' 'as' 'primary' 'key' (';'*)
+	'(' col1=ColumnNameReference ',' col2=ColumnNameReference (',' col+=ColumnNameReference)* ')' 'as' 'primary' 'key'
 ;
 
 enum ColumnType:
 	INT | FLOAT | STRING | BOOL
 ;
 
-ColumnAddition:
-	AddColumn | AddColumns
+// alter table rules
+AlterTable:
+	AddColumn | AddColumns | DropColumn | DropColumns | ModifyColumns
 ;
 
 AddColumn: 
-	table+=TableDeclaration '.' 'addColumn' '(' column+=ColumnDeclaration ');'
+	table+=TableDeclaration '.' 'addColumn' '(' column+=ColumnDeclaration ')'
 ;
 
 AddColumns: 
-	table+=TableDeclaration '.' 'addColumns' '(' '{' col1+=ColumnDeclaration '}' ',' '{' col2+=ColumnDeclaration '}' (',' '{' columns+=ColumnDeclaration '}')* ');'
+	table+=TableDeclaration '.' 'addColumns' '(' '{' col1+=ColumnDeclaration '}' ',' '{' col2+=ColumnDeclaration '}' (',' '{' columns+=ColumnDeclaration '}')* ')'
 ;
 
-// the problem here is that we cannot reference column outside of the table because it was only declared there
+DropColumn:
+	table+=TableDeclaration '.' 'dropColumn' '(' col=ColumnNameDeclaration ')'
+;
+
+DropColumns:
+	table+=TableDeclaration '.' 'dropColumns' '(' column=ColumnNameDeclaration  (',' columns+=ColumnNameDeclaration)* ')'
+;
+
+ModifyColumns:
+	table+=TableDeclaration '.' 'modify' '(' '{' col1+=ColumnDeclaration '}' ',' '{' col2+=ColumnDeclaration '}' (',' '{' columns+=ColumnDeclaration '}')* ')'
+;
+
 AddRow:
-	table+=TableDeclaration '.' 'addRow' '(' name=ID ':' value=ColumnValueType');'
+	table+=TableDeclaration '.' 'addRow' '(' name=ID ':' value=ColumnValueType')'
 ;
 
 RowValueDeclaration:
@@ -151,6 +149,50 @@ RowValueDeclaration:
 
 AddRows:
 	table+=TableDeclaration '.' 'addRows' '(' rows+=RowValueDeclaration+
+;
+
+Update:
+	table+=TableDeclaration ('.' whereClause=WhereClause )? '.' 'update(' rows+=RowValueDeclaration+
+;
+
+Delete:
+	table+=TableDeclaration ('.' whereClause=WhereClause )? '.' 'delete()'
+;
+
+WhereClause:
+	'where' '(' query+=Condition  (',' query+=Condition )* ')'
+;
+
+Condition:
+	name = ID condition = ConditionOperator value = ColumnValueType
+;
+
+TableColumnsCondition:
+	table1=TableDeclaration '.' column1=ColumnNameDeclaration '=' table2=TableDeclaration '.' column2=ColumnNameDeclaration
+;
+
+Join:
+	table1=TableDeclaration '.' joinType=JoinType '(' table2=TableDeclaration ')' '.' 'on' '(' joinCondition+= TableColumnsCondition ')' ('.' whereClause=WhereClause )?  '.' selection=Select
+;
+
+enum JoinType:
+	innerJoin | leftJoin | rightJoin | fullJoin
+;
+
+Select:
+	'select' '(' column=ColumnNameDeclaration  (',' columns+=ColumnNameDeclaration)* ')'
+;
+
+Query:
+	table=TableDeclaration '.' whereClause=WhereClause '.' select=Select (queryStmts=QueryStatement '()')? 
+;
+
+enum QueryStatement:
+	groupBy | orderBy
+;
+
+enum ConditionOperator:
+	lt | gt | eq | lte | gte | ne
 ;
 
 ColumnValueType returns Expression:
