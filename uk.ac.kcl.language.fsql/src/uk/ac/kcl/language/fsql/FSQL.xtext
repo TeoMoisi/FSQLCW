@@ -56,7 +56,7 @@ TableStatements:
 ;
 
 TableStatement:
-	AddRow | DropTable | Delete | Update | AlterTable | Join | Query
+	AddRow | AddRows | DropTable | Delete | Update | AlterTable | Join | Query
 ;
 	
 CreateDB:
@@ -158,8 +158,16 @@ AssignColumnValue:
 	column=ColumnNameReference '=' value=ColumnValueType
 ;
 
+RowDeclaration:
+	'{' column=AssignColumnValue ',' ( columns+=AssignColumnValue )* '}'
+;
+
 AddRow:
-	table+=TableDeclaration '.' 'addRow' '(' column=AssignColumnValue ',' ( columns+=AssignColumnValue )* ')'
+	table+=TableDeclaration '.' 'addRow' '(' row+=RowDeclaration ')'
+;
+
+AddRows:
+	table+=TableDeclaration '.' 'addRows' '(' row=RowDeclaration ',' (rows+=RowDeclaration)* ')'
 ;
 
 Update:
