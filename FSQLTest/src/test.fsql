@@ -1,5 +1,5 @@
-create database DB
 
+create database DB
 use database DB
 
 Table1.init()
