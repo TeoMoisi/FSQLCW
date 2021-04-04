@@ -42,15 +42,25 @@ import "http://www.eclipse.org/emf/2002/Ecore" as ecore
 
 
 FSQL:
-	createDB+=CreateDB+
-	useDB+=UseDB
-	initTable+=InitTable+
-	declareSchema+=SchemaDeclaration+
+	dbStatements+=DatabaseStatements*
 	tableStatements+=TableStatements*
 ;
 
+DatabaseStatements:
+	CreateDB | UseDB
+;
+
+// I have also added the database statements because we can change the db or create a new one
 TableStatements:
-	AddRow | AddRows | DropTable | Delete | Update | AlterTable | Join | Query | InitTable | SchemaDeclaration | CreateDB | UseDB
+	CreateTable | TableStatement
+;
+
+CreateTable:
+	InitTable | SchemaDeclaration
+;
+
+TableStatement:
+	AddRows | AddRow | DropTable | Delete | Update | AlterTable | Join | Query
 ;
 	
 CreateDB:
@@ -70,12 +80,12 @@ InitTable :
 	 name=ID '.' 'init()'
 ;
 
-SchemaDeclaration:
-	table+=TableDeclaration '.' 'schema' '(' column+=ColumnDeclaration  (',' columns+=ColumnDeclaration)* ')'
-;
-
 TableDeclaration:
 	var = [InitTable]
+;
+
+SchemaDeclaration:
+	table+=TableDeclaration '.' 'schema' '(' column+=ColumnDeclaration  (',' columns+=ColumnDeclaration)* ')'
 ;
 
 DropTable:
