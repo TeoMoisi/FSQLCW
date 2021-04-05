@@ -3,7 +3,10 @@ CREATE DATABASE DB1;
 USE DB1;
 
 CREATE TABLE Table1(
-	col:colType
+	id  INT PRIMARY KEY
+	name  STRING
+	isAdult  BOOL
+	age  INT
 )
 
 
@@ -20,7 +23,7 @@ CREATE TABLE Table1(
 
 
 CREATE TABLE Table2(
-	col:colType
+	id  INT PRIMARY KEY
 )
 
 
