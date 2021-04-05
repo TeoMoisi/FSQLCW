@@ -11,6 +11,11 @@ import uk.ac.kcl.language.fsql.fSQL.FSQL
 import uk.ac.kcl.language.fsql.fSQL.DatabaseStatements
 import uk.ac.kcl.language.fsql.fSQL.CreateDB
 import uk.ac.kcl.language.fsql.fSQL.UseDB
+import uk.ac.kcl.language.fsql.fSQL.TableStatements
+import uk.ac.kcl.language.fsql.fSQL.CreateTable
+import uk.ac.kcl.language.fsql.fSQL.InitTable
+import uk.ac.kcl.language.fsql.fSQL.SchemaDeclaration
+import uk.ac.kcl.language.fsql.fSQL.ColumnDeclaration
 
 /**
  * Generates code from your model files on save.
@@ -25,11 +30,6 @@ class FSQLGenerator extends AbstractGenerator {
 		val className = resource.deriveClassNameFor
 		
 		fsa.generateFile(className + '.sql', model.doGenerateCode)
-//		fsa.generateFile('greetings.txt', 'People to greet: ' + 
-//			resource.allContents
-//				.filter(Greeting)
-//				.map[name]
-//				.join(', '))
 	}
 	
 	def deriveClassNameFor(Resource resource) {
@@ -40,6 +40,7 @@ class FSQLGenerator extends AbstractGenerator {
 	
 	def String doGenerateCode(FSQL program) '''
 		«program.dbStatements.map[generateSQLDBCommand].join('\n')»
+		«program.tableStatements.map[generateSQLTableCommand].join('\n')»
 		
 	'''
 	
@@ -53,4 +54,22 @@ class FSQLGenerator extends AbstractGenerator {
 	dispatch def String generateSQLDBCommand(UseDB useDB) '''
 		USE «useDB.getDatabase().^var.name»;
 	'''
+	
+	dispatch def String generateSQLTableCommand(TableStatements tableStmt)'''
+	'''
+	
+	dispatch def String generateSQLTableCommand(CreateTable createTable)'''
+	'''
+	
+	dispatch def String generateSQLTableCommand(InitTable initTable)'''
+	'''
+	
+	dispatch def String generateSQLTableCommand(SchemaDeclaration schema)'''
+		CREATE TABLE «schema.table.get(0).^var.name»(
+			«schema.columns.map[generateSQLColumns].join('\n')»
+		)
+	'''
+	
+	// this will generate SQL code for each column declaration
+	dispatch def String generateSQLColumns(ColumnDeclaration column)'''col:colType'''
 }
