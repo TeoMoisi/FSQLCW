@@ -1,35 +1,42 @@
-create database DB
 
-use database DB
+create database DB1
 
-// create table Table1{{col1:FLOAT},{col2: STRING}}
+use database DB1
 
-create table Table1{col1:INT;name:STRING}
+Table1.init() 
 
-Table1.where(col1 lt 6).delete()
+Table1.schema(id : INT as primary key, name : BOOL )
 
-Table1.where(col1 eq 1).delete()
+Table1.addColumn(age:INT)
+
+Table1.addRow({name = "Teofana",age = 5})
+
+Table1.addRows({name = "John",age=7},{name="Julia" ,age=10})
+
+//// error if we want to access col1
+//// Table1.where(col1 lt 6).delete()
+//
+Table1.where(age eq 1).delete()
 
 Table1.delete()
 
-Table1.update({col1:5},{name:'teo'});
+Table1.update(age = 6)
 
-Table1.where(col1 gt 8).update({col1:7});
+Table1.where(id gt 8).update(age = 8)
+
 
 Table1.addColumn(col3:BOOL)
 
-Table1.addColumns({col4:FLOAT},{(col3,col4) as primary key },{col5:INT})
+Table1.addColumns(col4:FLOAT,(col3,col4) as primary key,col5:INT)
 
 Table1.dropColumn(col3)
 Table1.dropColumns(col4,col3)
 
-Table1.modify({col4:BOOL},{col5:STRING})
+Table1.modify(col4:BOOL,col5:STRING)
 
-create table Table2{id:INT;name:STRING}
+Table2.init()
 
-
-Table1.innerJoin(Table2).on(Table1.name = Table2.name).where(col1 eq 1).select(name, col1)
-Table1.leftJoin(Table2).on(Table1.name = Table2.name).select(name,col1)
-
-
-Table1.where(col1 ne 0).select(col1, name)
+Table2.schema(id:INT as primary key, name : STRING references Table1)
+//
+Table1.innerJoin(Table2).on(Table1.name = Table2.name).where(id eq 1).select(name, age)
+Table1.leftJoin(Table2).on(Table1.name = Table2.name).select(name,age)

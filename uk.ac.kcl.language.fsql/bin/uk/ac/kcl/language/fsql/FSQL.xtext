@@ -55,6 +55,10 @@ TableStatements:
 	CreateTable | TableStatement
 ;
 
+CreateTable:
+	InitTable | SchemaDeclaration
+;
+
 TableStatement:
 	AddRows | AddRow | DropTable | Delete | Update | AlterTable | Join | Query
 ;
@@ -62,32 +66,34 @@ TableStatement:
 CreateDB:
 	'create' 'database' name=ID
 ;
+
+DatabaseReferece:
+	var = [CreateDB]
+;
 	
 UseDB:
-	'use' 'database' name=ID
+	'use' 'database' database=DatabaseReferece
 ;
 
-CreateTable :
-	'create' 'table' name=ID '{'
-		column=ColumnDeclaration (';' columns+=ColumnDeclaration)*
-	 '}'
+
+InitTable :
+	 name=ID '.' 'init()'
 ;
 
 TableDeclaration:
-	var = [CreateTable]
+	var = [InitTable]
+;
+
+SchemaDeclaration:
+	table+=TableDeclaration '.' 'schema' '(' column+=ColumnDeclaration  (',' columns+=ColumnDeclaration)* ')'
 ;
 
 DropTable:
 	table=TableDeclaration '.' 'drop()'
 ;
 
-
 ColumnDeclaration:
 	SimpleDeclaration | PrimaryKey | ForeignKey | CompositeKey
-;
-
-ColumnNameDeclaration:
-	name=ID
 ;
 
 SimpleDeclaration:
@@ -104,6 +110,10 @@ ForeignKey:
 
 ColumnNameReference:
 	var = [ColumnDeclaration]
+;
+
+ColumnTypeModify:
+	column=ColumnNameReference ':' type=ColumnType
 ;
 
 CompositeKey:
@@ -124,35 +134,39 @@ AddColumn:
 ;
 
 AddColumns: 
-	table+=TableDeclaration '.' 'addColumns' '(' '{' col1+=ColumnDeclaration '}' ',' '{' col2+=ColumnDeclaration '}' (',' '{' columns+=ColumnDeclaration '}')* ')'
+	table+=TableDeclaration '.' 'addColumns' '(' column+=ColumnDeclaration (',' columns+=ColumnDeclaration)* ')'
 ;
 
 DropColumn:
-	table+=TableDeclaration '.' 'dropColumn' '(' col=ColumnNameDeclaration ')'
+	table+=TableDeclaration '.' 'dropColumn' '(' col=ColumnNameReference ')'
 ;
 
 DropColumns:
-	table+=TableDeclaration '.' 'dropColumns' '(' column=ColumnNameDeclaration  (',' columns+=ColumnNameDeclaration)* ')'
+	table+=TableDeclaration '.' 'dropColumns' '(' column=ColumnNameReference  (',' columns+=ColumnNameReference)* ')'
 ;
 
 ModifyColumns:
-	table+=TableDeclaration '.' 'modify' '(' '{' col1+=ColumnDeclaration '}' ',' '{' col2+=ColumnDeclaration '}' (',' '{' columns+=ColumnDeclaration '}')* ')'
+	table+=TableDeclaration '.' 'modify' '(' column=ColumnTypeModify (','columns+=ColumnTypeModify )* ')'
+;
+
+AssignColumnValue:
+	column=ColumnNameReference '=' value=ColumnValueType
+;
+
+RowDeclaration:
+	'{' column=AssignColumnValue ',' ( columns+=AssignColumnValue )* '}'
 ;
 
 AddRow:
-	table+=TableDeclaration '.' 'addRow' '(' name=ID ':' value=ColumnValueType')'
-;
-
-RowValueDeclaration:
-	'{' name=ID ':' value=ColumnValueType '}' (',' | ');')
+	table+=TableDeclaration '.' 'addRow' '(' row+=RowDeclaration ')'
 ;
 
 AddRows:
-	table+=TableDeclaration '.' 'addRows' '(' rows+=RowValueDeclaration+
+	table+=TableDeclaration '.' 'addRows' '(' row=RowDeclaration ',' (rows+=RowDeclaration)* ')'
 ;
 
 Update:
-	table+=TableDeclaration ('.' whereClause=WhereClause )? '.' 'update(' rows+=RowValueDeclaration+
+	table+=TableDeclaration ('.' whereClause=WhereClause )? '.' 'update(' column=AssignColumnValue (',')? ( columns+=AssignColumnValue )* ')'
 ;
 
 Delete:
@@ -164,11 +178,11 @@ WhereClause:
 ;
 
 Condition:
-	name = ID condition = ConditionOperator value = ColumnValueType
+	column=ColumnNameReference condition = ConditionOperator value = ColumnValueType
 ;
 
 TableColumnsCondition:
-	table1=TableDeclaration '.' column1=ColumnNameDeclaration '=' table2=TableDeclaration '.' column2=ColumnNameDeclaration
+	table1=TableDeclaration '.' column1=ColumnNameReference '=' table2=TableDeclaration '.' column2=ColumnNameReference
 ;
 
 Join:
@@ -180,7 +194,7 @@ enum JoinType:
 ;
 
 Select:
-	'select' '(' column=ColumnNameDeclaration  (',' columns+=ColumnNameDeclaration)* ')'
+	'select' '(' column=ColumnNameReference  (',' columns+=ColumnNameReference)* ')'
 ;
 
 Query:
