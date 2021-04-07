@@ -60,7 +60,7 @@ CreateTable:
 ;
 
 TableStatement:
-	AddRows | AddRow | DropTable | Delete | Update | AlterTable | Join | Query
+	AddRows | AddRow | DropTable | Delete | Update | AlterTable | Join | Query | SelectStatement
 ;
 	
 CreateDB:
@@ -193,8 +193,20 @@ enum JoinType:
 	innerJoin | leftJoin | rightJoin | fullJoin
 ;
 
-Select:
+SelectStatement:
+	table=TableDeclaration '.' select=Select
+;
+
+Select: 
+	CollectionSelect | AggregatedSelect
+;
+
+CollectionSelect:
 	'select' '(' column=ColumnNameReference  (',' columns+=ColumnNameReference)* ')'
+;
+
+AggregatedSelect:
+	'select' '(' column=ColumnNameReference  (',' columns+=ColumnNameReference)* ')' '.' aggregation=Aggregation
 ;
 
 Query:
@@ -231,4 +243,24 @@ StringType:
 
 BoolType :
 	val = "true" | {BoolType} "false"
+;
+
+Aggregation:
+	MinAggregation | MaxAggregation | CountAggregation | SumAggregation
+;
+	
+MinAggregation:
+	aggregation='min()'
+;
+
+MaxAggregation:
+	aggregation='max()'
+;
+
+CountAggregation:
+	aggregation='count()'
+;
+
+SumAggregation:
+	aggregation='sum()'
 ;
