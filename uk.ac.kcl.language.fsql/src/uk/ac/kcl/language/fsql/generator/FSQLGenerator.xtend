@@ -18,6 +18,9 @@ import uk.ac.kcl.language.fsql.fSQL.SchemaDeclaration
 import uk.ac.kcl.language.fsql.fSQL.ColumnDeclaration
 import uk.ac.kcl.language.fsql.fSQL.SimpleDeclaration
 import uk.ac.kcl.language.fsql.fSQL.PrimaryKey
+import uk.ac.kcl.language.fsql.fSQL.ColumnType
+import uk.ac.kcl.language.fsql.fSQL.ForeignKey
+import uk.ac.kcl.language.fsql.fSQL.CompositeKey
 
 /**
  * Generates code from your model files on save.
@@ -77,10 +80,14 @@ class FSQLGenerator extends AbstractGenerator {
 	dispatch def String generateSQLColumns(ColumnDeclaration column)''''''
 	
 	dispatch def String generateSQLColumns(SimpleDeclaration column)'''
-		«column.getName»  «column.type»
+		«column.getName»  «if (column.type === ColumnType.BOOL) {'''NUMBER(1)'''} else if (column.type === ColumnType.STRING) {'''VARCHAR(255)'''} else {column.type}»
 	'''
 	
 	dispatch def String generateSQLColumns(PrimaryKey column)'''
-		«column.getName»  «column.type» PRIMARY KEY
+		«column.column.generateSQLColumns» PRIMARY KEY
+	'''
+	
+	dispatch def String generateSQLColumns(ForeignKey column)'''
+		FOREIGN KEY «column.getColumn().^var.generateSQLColumns.split(' ').get(0)» REFERENCES «column.table.get(0).^var.name»(«column.getColumn().^var.generateSQLColumns.split(' ').get(0)»)
 	'''
 }

@@ -4,9 +4,7 @@ USE DB1;
 
 CREATE TABLE Table1(
 	id  INT PRIMARY KEY
-	name  STRING
-	isAdult  BOOL
-	age  INT
+	name  VARCHAR(255)isAdult  NUMBER(1)age  INT
 )
 
 
@@ -24,6 +22,7 @@ CREATE TABLE Table1(
 
 CREATE TABLE Table2(
 	id  INT PRIMARY KEY
+	name  VARCHAR(255)FOREIGN KEY name REFERENCES Table1(name  VARCHAR(255))
 )
 
 

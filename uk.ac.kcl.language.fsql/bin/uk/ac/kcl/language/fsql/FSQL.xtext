@@ -101,11 +101,11 @@ SimpleDeclaration:
 ;
 
 PrimaryKey:
-	name=ID ':' type=ColumnType 'as' 'primary' 'key'
+	column=SimpleDeclaration 'as' 'primary' 'key'
 ;
 
 ForeignKey:
-	name=ID ':' type=ColumnType 'references' table+=TableDeclaration
+	column=ColumnNameReference 'references' table+=TableDeclaration
 ;
 
 ColumnNameReference:
