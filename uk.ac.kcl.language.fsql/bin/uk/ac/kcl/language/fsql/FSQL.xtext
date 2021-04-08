@@ -117,7 +117,7 @@ ColumnTypeModify:
 ;
 
 CompositeKey:
-	'(' col1=ColumnNameReference ',' col2=ColumnNameReference (',' col+=ColumnNameReference)* ')' 'as' 'primary' 'key'
+	'(' column=ColumnNameReference (',' columns+=ColumnNameReference)* ')' 'as' 'primary' 'key'
 ;
 
 enum ColumnType:
@@ -209,7 +209,7 @@ enum ConditionOperator:
 	lt | gt | eq | lte | gte | ne
 ;
 
-ColumnValueType returns Expression:
+ColumnValueType:
 	IntType | RealType | StringType | BoolType
 ;
 

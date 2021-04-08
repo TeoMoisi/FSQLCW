@@ -21,6 +21,13 @@ import uk.ac.kcl.language.fsql.fSQL.PrimaryKey
 import uk.ac.kcl.language.fsql.fSQL.ColumnType
 import uk.ac.kcl.language.fsql.fSQL.ForeignKey
 import uk.ac.kcl.language.fsql.fSQL.CompositeKey
+import uk.ac.kcl.language.fsql.fSQL.ColumnNameReference
+import uk.ac.kcl.language.fsql.fSQL.TableStatement
+import uk.ac.kcl.language.fsql.fSQL.DropTable
+import uk.ac.kcl.language.fsql.fSQL.AddRow
+import uk.ac.kcl.language.fsql.fSQL.RowDeclaration
+import uk.ac.kcl.language.fsql.fSQL.AssignColumnValue
+import uk.ac.kcl.language.fsql.fSQL.AddRows
 
 /**
  * Generates code from your model files on save.
@@ -46,7 +53,6 @@ class FSQLGenerator extends AbstractGenerator {
 	def String doGenerateCode(FSQL program) '''
 		«program.dbStatements.map[generateSQLDBCommand].join('\n')»
 		«program.tableStatements.map[generateSQLTableCommand].join('\n')»
-		
 	'''
 	
 	dispatch def String generateSQLDBCommand(DatabaseStatements dbStmt) '''
@@ -69,25 +75,44 @@ class FSQLGenerator extends AbstractGenerator {
 	dispatch def String generateSQLTableCommand(InitTable initTable)'''
 	'''
 	
+	dispatch def String generateSQLTableCommand(TableStatement tableStmt)'''
+	'''
+	
+	dispatch def String generateSQLTableCommand(DropTable command)'''
+		DROP TABLE «command.table.^var.name»;
+	'''
+	
 	dispatch def String generateSQLTableCommand(SchemaDeclaration schema)'''
 		CREATE TABLE «schema.table.get(0).^var.name»(
-			«schema.column.map[generateSQLColumns].join('\n')»
-			«schema.columns.map[generateSQLColumns].join('')»
-		)
-	'''
+			«schema.column.map[generateSQLColumns].join('')»
+			«schema.columns.map[generateSQLColumns].join('\n')»
+		)'''
 	
 	// this will generate SQL code for each column declaration
 	dispatch def String generateSQLColumns(ColumnDeclaration column)''''''
 	
-	dispatch def String generateSQLColumns(SimpleDeclaration column)'''
-		«column.getName»  «if (column.type === ColumnType.BOOL) {'''NUMBER(1)'''} else if (column.type === ColumnType.STRING) {'''VARCHAR(255)'''} else {column.type}»
+	dispatch def String generateSQLColumns(SimpleDeclaration column)'''«column.getName» «if (column.type === ColumnType.BOOL) {'''NUMBER(1)'''} else if (column.type === ColumnType.STRING) {'''VARCHAR(255)'''} else {column.type}»'''
+	
+	dispatch def String generateSQLColumns(PrimaryKey column)'''«column.column.generateSQLColumns» PRIMARY KEY'''
+	
+	dispatch def String generateSQLColumns(ForeignKey column)'''FOREIGN KEY «column.getColumn().generateSQLColumnNameReference.substring(2)» REFERENCES «column.table.get(0).^var.name»(«column.getColumn().generateSQLColumnNameReference.substring(2)»)'''
+	
+	dispatch def String generateSQLColumns(CompositeKey column)'''PRIMARY KEY («column.getColumn().generateSQLColumnNameReference.substring(2)»«column.getColumns().map[generateSQLColumnNameReference].join('')»)'''
+	
+	def String generateSQLColumnNameReference(ColumnNameReference columnRef) ''', «columnRef.^var.generateSQLColumns.split(' ').get(0)»'''
+	
+	dispatch def String generateSQLTableCommand(AddRow command)'''INSERT INTO «command.table.get(0).^var.name» («command.row.map[generateRowDeclaration].join('')»);'''
+	
+	dispatch def String generateSQLTableCommand(AddRows command)'''INSERT INTO «command.table.get(0).^var.name» («command.row.generateRowDeclaration»)«command.rows.map[generateMultipleRows].join('')»;'''
+	
+	def String generateAssignColumnName(AssignColumnValue assignColumn)'''
+	, «assignColumn.column.generateSQLColumnNameReference.substring(2)»
 	'''
 	
-	dispatch def String generateSQLColumns(PrimaryKey column)'''
-		«column.column.generateSQLColumns» PRIMARY KEY
-	'''
+	def String generateAssignColumnValue(AssignColumnValue assignColumn)'''
+	, «assignColumn.value.toString().split(' ').get(2).substring(0, assignColumn.value.toString().split(' ').get(2).length - 1)»'''
 	
-	dispatch def String generateSQLColumns(ForeignKey column)'''
-		FOREIGN KEY «column.getColumn().^var.generateSQLColumns.split(' ').get(0)» REFERENCES «column.table.get(0).^var.name»(«column.getColumn().^var.generateSQLColumns.split(' ').get(0)»)
-	'''
+	def String generateRowDeclaration(RowDeclaration row)'''«row.column.column.generateSQLColumnNameReference.substring(2)»«row.columns.map[generateAssignColumnName].join('')») VALUES («row.column.value.toString().split(' ').get(2).substring(0, row.column.value.toString().split(' ').get(2).length - 1)»«row.columns.map[generateAssignColumnValue].join('')»'''
+	
+	def String generateMultipleRows(RowDeclaration row) ''', («row.column.value.toString().split(' ').get(2).substring(0, row.column.value.toString().split(' ').get(2).length - 1)»«row.columns.map[generateAssignColumnValue].join('')»)'''
 }
