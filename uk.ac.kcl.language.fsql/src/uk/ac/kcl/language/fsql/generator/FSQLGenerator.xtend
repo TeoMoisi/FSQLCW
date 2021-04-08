@@ -28,6 +28,10 @@ import uk.ac.kcl.language.fsql.fSQL.AddRow
 import uk.ac.kcl.language.fsql.fSQL.RowDeclaration
 import uk.ac.kcl.language.fsql.fSQL.AssignColumnValue
 import uk.ac.kcl.language.fsql.fSQL.AddRows
+import uk.ac.kcl.language.fsql.fSQL.Delete
+import uk.ac.kcl.language.fsql.fSQL.WhereClause
+import uk.ac.kcl.language.fsql.fSQL.Condition
+import uk.ac.kcl.language.fsql.fSQL.ConditionOperator
 
 /**
  * Generates code from your model files on save.
@@ -115,4 +119,29 @@ class FSQLGenerator extends AbstractGenerator {
 	def String generateRowDeclaration(RowDeclaration row)'''«row.column.column.generateSQLColumnNameReference.substring(2)»«row.columns.map[generateAssignColumnName].join('')») VALUES («row.column.value.toString().split(' ').get(2).substring(0, row.column.value.toString().split(' ').get(2).length - 1)»«row.columns.map[generateAssignColumnValue].join('')»'''
 	
 	def String generateMultipleRows(RowDeclaration row) ''', («row.column.value.toString().split(' ').get(2).substring(0, row.column.value.toString().split(' ').get(2).length - 1)»«row.columns.map[generateAssignColumnValue].join('')»)'''
+	
+	dispatch def String generateSQLTableCommand(Delete deleteCommand)'''
+	DELETE FROM «deleteCommand.table.get(0).^var.name» «deleteCommand.whereClause.generateWhereClause»'''
+	
+	def String generateWhereClause(WhereClause whereClause)'''
+	WHERE «whereClause.query.get(0).generateQuery»'''
+	
+	def String generateQuery(Condition condition)'''
+	«condition.getColumn().generateSQLColumnNameReference.substring(2)»«condition.getCondition().generateConditionValue»«condition.getValue().toString().split(' ').get(2).substring(0, condition.getValue().toString().split(' ').get(2).length - 1)»
+	'''
+	
+	def String generateConditionValue(ConditionOperator cond)'''
+	«if (cond == ConditionOperator.LT) 
+		{'<'} 
+	 else if (cond == ConditionOperator.GT)
+	 	{'>'}
+	 else if (cond == ConditionOperator.EQ)
+	 	{'='}
+	 else if (cond == ConditionOperator.LTE)
+	 	{'<='}
+	 else if (cond == ConditionOperator.GTE)
+	 	{'>='}
+	 else
+	 	{'!='}
+	 »'''
 }

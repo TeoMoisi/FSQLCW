@@ -19,7 +19,7 @@ Table1.addRows({name = "John",age=7},{name="Julia" ,age=10})
 //
 Table1.where(age eq 1).delete()
 
-Table1.delete()
+// Table1.delete()
 
 Table1.update(age = 6)
 

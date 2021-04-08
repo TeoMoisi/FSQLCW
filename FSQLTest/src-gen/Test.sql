@@ -13,7 +13,7 @@ INSERT INTO Table1 (name, age
 ) VALUES (Teofana, 65);
 INSERT INTO Table1 (name, age
 ) VALUES (John, 7), (Julia, 10);
-
+DELETE FROM Table1 WHERE age=1
 
 
 
