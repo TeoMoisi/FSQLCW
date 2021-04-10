@@ -198,15 +198,43 @@ SelectStatement:
 ;
 
 Select: 
-	CollectionSelect | AggregatedSelect
+	CollectionSelect | AggregatedSelect | GroupedSelect | SortedSelect | GroupSortedSelect
 ;
 
 CollectionSelect:
-	'select' '(' column=ColumnNameReference  (',' columns+=ColumnNameReference)* ')'
+	method='select' '(' column=ColumnNameReference  (',' columns+=ColumnNameReference)* ')'
 ;
 
 AggregatedSelect:
-	'select' '(' column=ColumnNameReference  (',' columns+=ColumnNameReference)* ')' '.' aggregation=Aggregation
+	method='select' '(' column=ColumnNameReference  (',' columns+=ColumnNameReference)* ')' '.' aggregation=Aggregation
+;
+
+GroupedSelect:
+	method='select' '(' column=ColumnNameReference  (',' columns+=ColumnNameReference)* ')' '.' groupBy=GroupByStmt
+;
+
+SortedSelect:
+	method='select' '(' column=ColumnNameReference  (',' columns+=ColumnNameReference)* ')' '.' orderBy=OrderByStmt
+;
+
+GroupSortedSelect:
+	method='select' '(' column=ColumnNameReference  (',' columns+=ColumnNameReference)* ')' '.' groupBy=GroupByStmt '.' orderBy=OrderByStmt
+;
+
+GroupByStmt:
+	method='groupBy' '(' column=ColumnNameReference ')' ( '.' having=HavingStmt)?
+;
+
+HavingStmt:
+	method='having' '(' query+=Condition ')'
+;
+
+OrderByStmt:
+	method='orderBy' '(' column=ColumnNameReference (',' order=SortingOrder)? ')'
+;
+
+enum SortingOrder:
+	asc | desc
 ;
 
 Query:

@@ -30,6 +30,8 @@ Table1.where(age lt 20).select(age).count()
 Table1.where(age gt 20).select(age).sum()
 Table1.select(age).max()
 
+Table1.select(name, age).groupBy(age).having(age gt 18).orderBy(age,asc)
+
 Table1.addColumn(col3:BOOL)
 
 Table1.addColumns(col4:FLOAT,(col3,col4) as primary key,col5:INT)
