@@ -174,7 +174,15 @@ Delete:
 ;
 
 WhereClause:
-	'where' '(' query+=Condition  (',' query+=Condition )* ')'
+	'where' '(' query+=Condition  cond+=ConditionalOperator* ')'
+;
+
+ConditionalOperator:
+	operator=Operator queries=Condition
+;
+
+enum Operator:
+	AND | OR
 ;
 
 Condition:

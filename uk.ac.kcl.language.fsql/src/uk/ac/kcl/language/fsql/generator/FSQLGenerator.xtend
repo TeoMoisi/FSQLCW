@@ -32,6 +32,8 @@ import uk.ac.kcl.language.fsql.fSQL.Delete
 import uk.ac.kcl.language.fsql.fSQL.WhereClause
 import uk.ac.kcl.language.fsql.fSQL.Condition
 import uk.ac.kcl.language.fsql.fSQL.ConditionOperator
+import uk.ac.kcl.language.fsql.fSQL.Operator
+import uk.ac.kcl.language.fsql.fSQL.ConditionalOperator
 
 /**
  * Generates code from your model files on save.
@@ -121,10 +123,27 @@ class FSQLGenerator extends AbstractGenerator {
 	def String generateMultipleRows(RowDeclaration row) ''', («row.column.value.toString().split(' ').get(2).substring(0, row.column.value.toString().split(' ').get(2).length - 1)»«row.columns.map[generateAssignColumnValue].join('')»)'''
 	
 	dispatch def String generateSQLTableCommand(Delete deleteCommand)'''
-	DELETE FROM «deleteCommand.table.get(0).^var.name» «deleteCommand.whereClause.generateWhereClause»'''
+	«if (deleteCommand.whereClause === null) 
+		{'DELETE * FROM '+ deleteCommand.table.get(0).^var.name} 
+	else
+		{ 'DELETE FROM ' + deleteCommand.table.get(0).^var.name + ' ' + deleteCommand.whereClause.generateWhereClause}
+	»'''
 	
 	def String generateWhereClause(WhereClause whereClause)'''
-	WHERE «whereClause.query.get(0).generateQuery»'''
+	 WHERE «whereClause.query.get(0).generateQuery»
+	 «if (whereClause.cond !== null) {
+	 	whereClause.cond.map[generateOperatorWithCondition].join('')
+	 }»
+	 '''
+	 
+	def String generateOperatorWithCondition(ConditionalOperator cond)'''«cond.operator.generateOperatorValue»«cond.queries.generateQuery»'''
+	 
+	def String generateOperatorValue(Operator op) '''«
+		if (op == Operator.AND) {
+			' AND '
+		} else {
+			' OR '
+		}»'''
 	
 	def String generateQuery(Condition condition)'''
 	«condition.getColumn().generateSQLColumnNameReference.substring(2)»«condition.getCondition().generateConditionValue»«condition.getValue().toString().split(' ').get(2).substring(0, condition.getValue().toString().split(' ').get(2).length - 1)»

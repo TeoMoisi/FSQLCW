@@ -17,9 +17,9 @@ Table1.addRows({name = "John",age=7},{name="Julia" ,age=10})
 //// error if we want to access col1
 //// Table1.where(col1 lt 6).delete()
 //
-Table1.where(age eq 1).delete()
+Table1.where(age lte 1 AND id lt 6 OR name eq 'Teofana').delete()
 
-// Table1.delete()
+Table1.delete()
 
 Table1.update(age = 6)
 

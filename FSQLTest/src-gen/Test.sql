@@ -13,8 +13,11 @@ INSERT INTO Table1 (name, age
 ) VALUES (Teofana, 65);
 INSERT INTO Table1 (name, age
 ) VALUES (John, 7), (Julia, 10);
-DELETE FROM Table1 WHERE age=1
+DELETE FROM Table1 WHERE age<=1
+ AND id<6
+ OR name=Teofana
 
+DELETE * FROM Table1
 
 
 
