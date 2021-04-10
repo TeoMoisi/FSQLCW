@@ -1,0 +1,30 @@
+CREATE DATABASE DB1;
+
+USE DB1;
+
+CREATE TABLE Table1(
+	id  INT PRIMARY KEY
+	name  VARCHAR(255)
+	isAdult  NUMBER(1)
+	age  INT
+)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+CREATE TABLE Table2(
+	id  INT PRIMARY KEY
+)
+
+
+
