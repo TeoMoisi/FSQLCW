@@ -10,6 +10,7 @@ CREATE TABLE Table1(
 )
 ALTER TABLE Table1
 ADD age INT;
+
 INSERT INTO Table1 (name,age,isAdult) VALUES (Teofana Moisi,65.7,false);
 INSERT INTO Table1 (name,age) VALUES (John,7), (Julia,10);
 DELETE FROM Table1 WHERE age<=1
@@ -29,12 +30,18 @@ WHERE id>8
 
 ALTER TABLE Table1
 ADD col3 NUMBER(1);
+
 ALTER TABLE Table1
-ADD col4 FLOAT,PRIMARY KEY (col3,col4),col5 INT;
+ADD (col4 FLOAT,PRIMARY KEY (col3,col4),col5 INT);
+
 ALTER TABLE Table1
 DROP COLUMN col3;
+
 ALTER TABLE Table1
-DROP COLUMN col4,col3;
+DROP COLUMN (col4,col3);
+
+ALTER TABLE Table1
+MODIFY (col4 NUMBER(1),col5 VARCHAR(255));
 
 
 CREATE TABLE Table2(

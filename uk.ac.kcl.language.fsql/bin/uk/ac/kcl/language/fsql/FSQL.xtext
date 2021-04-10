@@ -146,7 +146,7 @@ DropColumns:
 ;
 
 ModifyColumns:
-	table+=TableDeclaration '.' 'modify' '(' column=ColumnTypeModify (','columns+=ColumnTypeModify )* ')'
+	table+=TableDeclaration '.' 'modify' '(' column=ColumnDeclaration (','columns+=ColumnDeclaration )* ')'
 ;
 
 AssignColumnValue:

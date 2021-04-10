@@ -40,6 +40,7 @@ import uk.ac.kcl.language.fsql.fSQL.AddColumn
 import uk.ac.kcl.language.fsql.fSQL.AddColumns
 import uk.ac.kcl.language.fsql.fSQL.DropColumn
 import uk.ac.kcl.language.fsql.fSQL.DropColumns
+import uk.ac.kcl.language.fsql.fSQL.ModifyColumns
 
 /**
  * Generates code from your model files on save.
@@ -187,17 +188,27 @@ class FSQLGenerator extends AbstractGenerator {
 	 
 	 dispatch def String generateSQLTableCommand(AddColumn addColumn)'''
 	 ALTER TABLE «addColumn.table.get(0).^var.name»
-	 ADD «addColumn.column.map[generateSQLColumns].join('')»;'''
+	 ADD «addColumn.column.map[generateSQLColumns].join('')»;
+	 '''
 	 
 	 dispatch def String generateSQLTableCommand(AddColumns addColumns)'''
 	 ALTER TABLE «addColumns.table.get(0).^var.name»
-	 ADD «addColumns.column.map[generateSQLColumns].join('')»«',' + addColumns.columns.map[generateSQLColumns].join(',')»;'''
+	 ADD («addColumns.column.map[generateSQLColumns].join('')»«',' + addColumns.columns.map[generateSQLColumns].join(',')»);
+	 '''
 	 
 	 dispatch def String generateSQLTableCommand(DropColumn dropColumn)'''
 	 ALTER TABLE «dropColumn.table.get(0).^var.name»
-	 DROP COLUMN «dropColumn.col.generateSQLColumnNameReference»;'''
+	 DROP COLUMN «dropColumn.col.generateSQLColumnNameReference»;
+	 '''
 	 
 	 dispatch def String generateSQLTableCommand(DropColumns dropColumns)'''
 	 ALTER TABLE «dropColumns.table.get(0).^var.name»
-	 DROP COLUMN «dropColumns.column.generateSQLColumnNameReference»«',' + dropColumns.columns.map[generateSQLColumnNameReference].join(',')»;'''
+	 DROP COLUMN («dropColumns.column.generateSQLColumnNameReference»«',' + dropColumns.columns.map[generateSQLColumnNameReference].join(',')»);
+	 '''
+	 
+	 dispatch def String generateSQLTableCommand(ModifyColumns modifyColumns)'''
+	 ALTER TABLE «modifyColumns.table.get(0).^var.name»
+	 MODIFY «if (modifyColumns.columns !== null) {'(' + modifyColumns.column.generateSQLColumns +',' + modifyColumns.columns.map[generateSQLColumns].join(',') + ')'}
+	 else {modifyColumns.column.generateSQLColumns}»;
+	 '''
 }
