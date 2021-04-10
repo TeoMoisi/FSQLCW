@@ -8,7 +8,8 @@ CREATE TABLE Table1(
 	isAdult NUMBER(1)
 	age INT
 )
-
+ALTER TABLE Table1
+ADD age INT;
 INSERT INTO Table1 (name,age,isAdult) VALUES (Teofana Moisi,65.7,false);
 INSERT INTO Table1 (name,age) VALUES (John,7), (Julia,10);
 DELETE FROM Table1 WHERE age<=1
@@ -26,8 +27,10 @@ SET age=8
 WHERE id>8
  AND name=teo
 
-
-
+ALTER TABLE Table1
+ADD col3 NUMBER(1);
+ALTER TABLE Table1
+ADD col4 FLOAT,PRIMARY KEY (col3,col4),col5 INT;
 
 
 
@@ -44,6 +47,6 @@ CREATE TABLE Table3(
 	address VARCHAR(255)
 	name VARCHAR(255)
 	city VARCHAR(255)
-	PRIMARY KEY (address, name, city)
+	PRIMARY KEY (address,name,city)
 )
 DROP TABLE Table1;

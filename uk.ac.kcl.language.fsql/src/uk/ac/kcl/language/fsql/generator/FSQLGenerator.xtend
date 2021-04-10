@@ -35,6 +35,9 @@ import uk.ac.kcl.language.fsql.fSQL.ConditionOperator
 import uk.ac.kcl.language.fsql.fSQL.Operator
 import uk.ac.kcl.language.fsql.fSQL.ConditionalOperator
 import uk.ac.kcl.language.fsql.fSQL.Update
+import uk.ac.kcl.language.fsql.fSQL.AlterTable
+import uk.ac.kcl.language.fsql.fSQL.AddColumn
+import uk.ac.kcl.language.fsql.fSQL.AddColumns
 
 /**
  * Generates code from your model files on save.
@@ -102,18 +105,18 @@ class FSQLGenerator extends AbstractGenerator {
 	
 	dispatch def String generateSQLColumns(PrimaryKey column)'''«column.column.generateSQLColumns» PRIMARY KEY'''
 	
-	dispatch def String generateSQLColumns(ForeignKey column)'''FOREIGN KEY «column.getColumn().generateSQLColumnNameReference.substring(2)» REFERENCES «column.table.get(0).^var.name»(«column.getColumn().generateSQLColumnNameReference.substring(2)»)'''
+	dispatch def String generateSQLColumns(ForeignKey column)'''FOREIGN KEY «column.getColumn().generateSQLColumnNameReference» REFERENCES «column.table.get(0).^var.name»(«column.getColumn().generateSQLColumnNameReference»)'''
 	
-	dispatch def String generateSQLColumns(CompositeKey column)'''PRIMARY KEY («column.getColumn().generateSQLColumnNameReference.substring(2)»«column.getColumns().map[generateSQLColumnNameReference].join('')»)'''
+	dispatch def String generateSQLColumns(CompositeKey column)'''PRIMARY KEY («column.getColumn().generateSQLColumnNameReference»«',' + column.getColumns().map[generateSQLColumnNameReference].join(',')»)'''
 	
-	def String generateSQLColumnNameReference(ColumnNameReference columnRef) ''', «columnRef.^var.generateSQLColumns.split(' ').get(0)»'''
+	def String generateSQLColumnNameReference(ColumnNameReference columnRef) '''«columnRef.^var.generateSQLColumns.split(' ').get(0)»'''
 	
 	dispatch def String generateSQLTableCommand(AddRow command)'''INSERT INTO «command.table.get(0).^var.name» («command.row.map[generateRowDeclaration].join('')»);'''
 	
 	dispatch def String generateSQLTableCommand(AddRows command)'''INSERT INTO «command.table.get(0).^var.name» («command.row.generateRowDeclaration»)«command.rows.map[generateMultipleRows].join('')»;'''
 	
 	def String generateAssignColumnName(AssignColumnValue assignColumn)'''
-	«assignColumn.column.generateSQLColumnNameReference.substring(2)»'''
+	«assignColumn.column.generateSQLColumnNameReference»'''
 	
 	def String generateAssignColumnValue(AssignColumnValue assignColumn)'''
 	«assignColumn.value.toString().split('val: ').get(1).substring(0, assignColumn.value.toString().split('val: ').get(1).length - 1)»'''
@@ -151,7 +154,7 @@ class FSQLGenerator extends AbstractGenerator {
 		}»'''
 	
 	def String generateQuery(Condition condition)'''
-	«condition.getColumn().generateSQLColumnNameReference.substring(2)»«condition.getCondition().generateConditionValue»«condition.getValue().toString().split(' ').get(2).substring(0, condition.getValue().toString().split(' ').get(2).length - 1)»
+	«condition.getColumn().generateSQLColumnNameReference»«condition.getCondition().generateConditionValue»«condition.getValue().toString().split(' ').get(2).substring(0, condition.getValue().toString().split(' ').get(2).length - 1)»
 	'''
 	
 	def String generateConditionValue(ConditionOperator cond)'''
@@ -179,4 +182,14 @@ class FSQLGenerator extends AbstractGenerator {
 	 	updateCommand.whereClause.generateWhereClause
 	 }»
 	 '''
+	 
+	 dispatch def String generateSQLTableCommand(AlterTable alterCommand)''''''
+	 
+	 dispatch def String generateSQLTableCommand(AddColumn addColumn)'''
+	 ALTER TABLE «addColumn.table.get(0).^var.name»
+	 ADD «addColumn.column.map[generateSQLColumns].join('')»;'''
+	 
+	 dispatch def String generateSQLTableCommand(AddColumns addColumns)'''
+	 ALTER TABLE «addColumns.table.get(0).^var.name»
+	 ADD «addColumns.column.map[generateSQLColumns].join('')»«',' + addColumns.columns.map[generateSQLColumns].join(',')»;'''
 }
