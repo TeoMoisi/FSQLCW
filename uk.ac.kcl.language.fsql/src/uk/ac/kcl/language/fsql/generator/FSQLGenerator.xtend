@@ -38,6 +38,8 @@ import uk.ac.kcl.language.fsql.fSQL.Update
 import uk.ac.kcl.language.fsql.fSQL.AlterTable
 import uk.ac.kcl.language.fsql.fSQL.AddColumn
 import uk.ac.kcl.language.fsql.fSQL.AddColumns
+import uk.ac.kcl.language.fsql.fSQL.DropColumn
+import uk.ac.kcl.language.fsql.fSQL.DropColumns
 
 /**
  * Generates code from your model files on save.
@@ -175,9 +177,7 @@ class FSQLGenerator extends AbstractGenerator {
 	 dispatch def String generateSQLTableCommand(Update updateCommand)'''
 	 UPDATE «updateCommand.table.get(0).^var.name»
 	 SET «updateCommand.column.generateAssignColumn»
-	 «if (updateCommand.columns !== null) {
-	 	',' + updateCommand.columns.map[generateAssignColumn].join(',')
-	 }»
+	 «if (updateCommand.columns !== null) {',' + updateCommand.columns.map[generateAssignColumn].join(',')}»
 	 «if (updateCommand.whereClause !== null) {
 	 	updateCommand.whereClause.generateWhereClause
 	 }»
@@ -192,4 +192,12 @@ class FSQLGenerator extends AbstractGenerator {
 	 dispatch def String generateSQLTableCommand(AddColumns addColumns)'''
 	 ALTER TABLE «addColumns.table.get(0).^var.name»
 	 ADD «addColumns.column.map[generateSQLColumns].join('')»«',' + addColumns.columns.map[generateSQLColumns].join(',')»;'''
+	 
+	 dispatch def String generateSQLTableCommand(DropColumn dropColumn)'''
+	 ALTER TABLE «dropColumn.table.get(0).^var.name»
+	 DROP COLUMN «dropColumn.col.generateSQLColumnNameReference»;'''
+	 
+	 dispatch def String generateSQLTableCommand(DropColumns dropColumns)'''
+	 ALTER TABLE «dropColumns.table.get(0).^var.name»
+	 DROP COLUMN «dropColumns.column.generateSQLColumnNameReference»«',' + dropColumns.columns.map[generateSQLColumnNameReference].join(',')»;'''
 }
