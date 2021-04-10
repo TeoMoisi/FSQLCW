@@ -20,13 +20,19 @@ DELETE FROM Table1 WHERE age<=1
 DELETE * FROM Table1
 UPDATE Table1
 SET age=6
-,address=Roadhbjhv
+,name=Roadhbjhv
 
 UPDATE Table1
 SET age=8
 ,name=bjhbjh,address=jksnv
 WHERE id>8
  AND name=teo
+
+
+
+
+
+
 
 ALTER TABLE Table1
 ADD col3 NUMBER(1);
