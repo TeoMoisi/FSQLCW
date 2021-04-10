@@ -60,7 +60,7 @@ CreateTable:
 ;
 
 TableStatement:
-	AddRows | AddRow | DropTable | Delete | Update | AlterTable | Join | Query
+	AddRows | AddRow | DropTable | Delete | Update | AlterTable | Join | Query | SelectStatement
 ;
 	
 CreateDB:
@@ -193,8 +193,48 @@ enum JoinType:
 	innerJoin | leftJoin | rightJoin | fullJoin
 ;
 
-Select:
-	'select' '(' column=ColumnNameReference  (',' columns+=ColumnNameReference)* ')'
+SelectStatement:
+	table=TableDeclaration '.' select=Select
+;
+
+Select: 
+	CollectionSelect | AggregatedSelect | GroupedSelect | SortedSelect | GroupSortedSelect
+;
+
+CollectionSelect:
+	method='select' '(' column=ColumnNameReference  (',' columns+=ColumnNameReference)* ')'
+;
+
+AggregatedSelect:
+	method='select' '(' column=ColumnNameReference  (',' columns+=ColumnNameReference)* ')' '.' aggregation=Aggregation
+;
+
+GroupedSelect:
+	method='select' '(' column=ColumnNameReference  (',' columns+=ColumnNameReference)* ')' '.' groupBy=GroupByStmt
+;
+
+SortedSelect:
+	method='select' '(' column=ColumnNameReference  (',' columns+=ColumnNameReference)* ')' '.' orderBy=OrderByStmt
+;
+
+GroupSortedSelect:
+	method='select' '(' column=ColumnNameReference  (',' columns+=ColumnNameReference)* ')' '.' groupBy=GroupByStmt '.' orderBy=OrderByStmt
+;
+
+GroupByStmt:
+	method='groupBy' '(' column=ColumnNameReference ')' ( '.' having=HavingStmt)?
+;
+
+HavingStmt:
+	method='having' '(' query+=Condition ')'
+;
+
+OrderByStmt:
+	method='orderBy' '(' column=ColumnNameReference (',' order=SortingOrder)? ')'
+;
+
+enum SortingOrder:
+	asc | desc
 ;
 
 Query:
@@ -231,4 +271,24 @@ StringType:
 
 BoolType :
 	val = "true" | {BoolType} "false"
+;
+
+Aggregation:
+	MinAggregation | MaxAggregation | CountAggregation | SumAggregation
+;
+	
+MinAggregation:
+	aggregation='min()'
+;
+
+MaxAggregation:
+	aggregation='max()'
+;
+
+CountAggregation:
+	aggregation='count()'
+;
+
+SumAggregation:
+	aggregation='sum()'
 ;

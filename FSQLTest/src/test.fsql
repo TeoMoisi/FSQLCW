@@ -24,6 +24,13 @@ Table1.update(age = 6)
 
 Table1.where(id gt 8).update(age = 8)
 
+Table1.where(age lt 20).select(age).max()
+Table1.where(age gt 20).select(age).min()
+Table1.where(age lt 20).select(age).count()
+Table1.where(age gt 20).select(age).sum()
+Table1.select(age).max()
+
+Table1.select(name, age).groupBy(age).having(age gt 18).orderBy(age,asc)
 
 Table1.addColumn(col3:BOOL)
 
