@@ -154,7 +154,7 @@ AssignColumnValue:
 ;
 
 RowDeclaration:
-	'{' column=AssignColumnValue ',' ( columns+=AssignColumnValue )* '}'
+	'{' column=AssignColumnValue (',' columns+=AssignColumnValue )* '}'
 ;
 
 AddRow:
@@ -162,11 +162,11 @@ AddRow:
 ;
 
 AddRows:
-	table+=TableDeclaration '.' 'addRows' '(' row=RowDeclaration ',' (rows+=RowDeclaration)* ')'
+	table+=TableDeclaration '.' 'addRows' '(' row=RowDeclaration (',' rows+=RowDeclaration)* ')'
 ;
 
 Update:
-	table+=TableDeclaration ('.' whereClause=WhereClause )? '.' 'update(' column=AssignColumnValue (',')? ( columns+=AssignColumnValue )* ')'
+	table+=TableDeclaration ('.' whereClause=WhereClause )? '.' 'update(' column=AssignColumnValue ( ',' columns+=AssignColumnValue )* ')'
 ;
 
 Delete:
@@ -237,6 +237,6 @@ StringType:
 	val = STRING
 ;
 
-BoolType :
-	val = "true" | {BoolType} "false"
+BoolType:
+	val = ("true" | "false")
 ;

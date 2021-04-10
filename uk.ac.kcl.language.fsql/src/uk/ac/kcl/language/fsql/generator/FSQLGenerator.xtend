@@ -34,6 +34,7 @@ import uk.ac.kcl.language.fsql.fSQL.Condition
 import uk.ac.kcl.language.fsql.fSQL.ConditionOperator
 import uk.ac.kcl.language.fsql.fSQL.Operator
 import uk.ac.kcl.language.fsql.fSQL.ConditionalOperator
+import uk.ac.kcl.language.fsql.fSQL.Update
 
 /**
  * Generates code from your model files on save.
@@ -112,15 +113,19 @@ class FSQLGenerator extends AbstractGenerator {
 	dispatch def String generateSQLTableCommand(AddRows command)'''INSERT INTO «command.table.get(0).^var.name» («command.row.generateRowDeclaration»)«command.rows.map[generateMultipleRows].join('')»;'''
 	
 	def String generateAssignColumnName(AssignColumnValue assignColumn)'''
-	, «assignColumn.column.generateSQLColumnNameReference.substring(2)»
-	'''
+	«assignColumn.column.generateSQLColumnNameReference.substring(2)»'''
 	
 	def String generateAssignColumnValue(AssignColumnValue assignColumn)'''
-	, «assignColumn.value.toString().split(' ').get(2).substring(0, assignColumn.value.toString().split(' ').get(2).length - 1)»'''
+	«assignColumn.value.toString().split('val: ').get(1).substring(0, assignColumn.value.toString().split('val: ').get(1).length - 1)»'''
+	// «assignColumn.value.toString().split(' ').get(2).substring(0, assignColumn.value.toString().split(' ').get(2).length - 1)»'''
 	
-	def String generateRowDeclaration(RowDeclaration row)'''«row.column.column.generateSQLColumnNameReference.substring(2)»«row.columns.map[generateAssignColumnName].join('')») VALUES («row.column.value.toString().split(' ').get(2).substring(0, row.column.value.toString().split(' ').get(2).length - 1)»«row.columns.map[generateAssignColumnValue].join('')»'''
+	def String generateAssignColumn(AssignColumnValue assignColumn)'''
+	«assignColumn.generateAssignColumnName»=«assignColumn.generateAssignColumnValue»'''
 	
-	def String generateMultipleRows(RowDeclaration row) ''', («row.column.value.toString().split(' ').get(2).substring(0, row.column.value.toString().split(' ').get(2).length - 1)»«row.columns.map[generateAssignColumnValue].join('')»)'''
+	
+	def String generateRowDeclaration(RowDeclaration row)'''«row.column.generateAssignColumnName»«',' + row.columns.map[generateAssignColumnName].join(',')») VALUES («row.column.generateAssignColumnValue»«',' + row.columns.map[generateAssignColumnValue].join(',')»'''
+	
+	def String generateMultipleRows(RowDeclaration row) ''', («row.column.generateAssignColumnValue»«',' + row.columns.map[generateAssignColumnValue].join(',')»)'''
 	
 	dispatch def String generateSQLTableCommand(Delete deleteCommand)'''
 	«if (deleteCommand.whereClause === null) 
@@ -163,4 +168,15 @@ class FSQLGenerator extends AbstractGenerator {
 	 else
 	 	{'!='}
 	 »'''
+	 
+	 dispatch def String generateSQLTableCommand(Update updateCommand)'''
+	 UPDATE «updateCommand.table.get(0).^var.name»
+	 SET «updateCommand.column.generateAssignColumn»
+	 «if (updateCommand.columns !== null) {
+	 	',' + updateCommand.columns.map[generateAssignColumn].join(',')
+	 }»
+	 «if (updateCommand.whereClause !== null) {
+	 	updateCommand.whereClause.generateWhereClause
+	 }»
+	 '''
 }

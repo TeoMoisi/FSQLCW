@@ -9,16 +9,22 @@ CREATE TABLE Table1(
 	age INT
 )
 
-INSERT INTO Table1 (name, age
-) VALUES (Teofana, 65);
-INSERT INTO Table1 (name, age
-) VALUES (John, 7), (Julia, 10);
+INSERT INTO Table1 (name,age,isAdult) VALUES (Teofana Moisi,65.7,false);
+INSERT INTO Table1 (name,age) VALUES (John,7), (Julia,10);
 DELETE FROM Table1 WHERE age<=1
  AND id<6
  OR name=Teofana
 
 DELETE * FROM Table1
+UPDATE Table1
+SET age=6
+,address=Roadhbjhv
 
+UPDATE Table1
+SET age=8
+,name=bjhbjh,address=jksnv
+WHERE id>8
+ AND name=teo
 
 
 

@@ -10,7 +10,7 @@ Table1.schema(id : INT as primary key, name : STRING, isAdult: BOOL, age: INT)
 
 Table1.addColumn(age:INT)
 
-Table1.addRow({name = "Teofana",age = 65})
+Table1.addRow({name = "Teofana Moisi",age = 65.7, isAdult=false})
 
 Table1.addRows({name = "John",age=7},{name="Julia" ,age=10})
 
@@ -21,9 +21,9 @@ Table1.where(age lte 1 AND id lt 6 OR name eq 'Teofana').delete()
 
 Table1.delete()
 
-Table1.update(age = 6)
+Table1.update(age = 6,address="Roadhbjhv")
 
-Table1.where(id gt 8).update(age = 8)
+Table1.where(id gt 8 AND name eq "teo").update(age = 8,name="bjhbjh",address="jksnv")
 
 Table1.addColumn(col3:BOOL)
 
