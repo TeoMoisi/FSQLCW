@@ -16,6 +16,7 @@ Posts.init()
 // XPECT scope at Posts --> Users, Posts, ...
 Posts.schema(
 	postId: INT as primary key,
-	userId: INT references Users,
+	userId: INT,
+	userId references Users,
 	body: STRING
 )

@@ -28,11 +28,21 @@ SET age=8
 WHERE id>8
  AND name=teo
 
+SELECT MIN(age) FROM Table1;
 
+SELECT name
+,age FROM Table1 ORDER BY age
+ASC
+;
 
+SELECT name
+,age FROM Table1 GROUP BY age
+ ORDER BY age
+ASC
+;
 
-
-
+SELECT Table1.name
+,age FROM Table1;
 
 ALTER TABLE Table1
 ADD col3 NUMBER(1);

@@ -41,6 +41,19 @@ import uk.ac.kcl.language.fsql.fSQL.AddColumns
 import uk.ac.kcl.language.fsql.fSQL.DropColumn
 import uk.ac.kcl.language.fsql.fSQL.DropColumns
 import uk.ac.kcl.language.fsql.fSQL.ModifyColumns
+import uk.ac.kcl.language.fsql.fSQL.Join
+import uk.ac.kcl.language.fsql.fSQL.SelectStatement
+import uk.ac.kcl.language.fsql.fSQL.Select
+import uk.ac.kcl.language.fsql.fSQL.CollectionSelect
+import uk.ac.kcl.language.fsql.fSQL.AggregatedSelect
+import uk.ac.kcl.language.fsql.fSQL.Aggregation
+import uk.ac.kcl.language.fsql.fSQL.GroupedSelect
+import uk.ac.kcl.language.fsql.fSQL.GroupByStmt
+import uk.ac.kcl.language.fsql.fSQL.HavingStmt
+import uk.ac.kcl.language.fsql.fSQL.SortedSelect
+import uk.ac.kcl.language.fsql.fSQL.OrderByStmt
+import uk.ac.kcl.language.fsql.fSQL.SortingOrder
+import uk.ac.kcl.language.fsql.fSQL.GroupSortedSelect
 
 /**
  * Generates code from your model files on save.
@@ -112,7 +125,7 @@ class FSQLGenerator extends AbstractGenerator {
 	
 	dispatch def String generateSQLColumns(CompositeKey column)'''PRIMARY KEY («column.getColumn().generateSQLColumnNameReference»«',' + column.getColumns().map[generateSQLColumnNameReference].join(',')»)'''
 	
-	def String generateSQLColumnNameReference(ColumnNameReference columnRef) '''«columnRef.^var.generateSQLColumns.split(' ').get(0)»'''
+	def String generateSQLColumnNameReference(ColumnNameReference columnRef) '''«if (columnRef.table !== null) {columnRef.table.^var.name + '.'}»«columnRef.^var.generateSQLColumns.split(' ').get(0)»'''
 	
 	dispatch def String generateSQLTableCommand(AddRow command)'''INSERT INTO «command.table.get(0).^var.name» («command.row.map[generateRowDeclaration].join('')»);'''
 	
@@ -123,7 +136,6 @@ class FSQLGenerator extends AbstractGenerator {
 	
 	def String generateAssignColumnValue(AssignColumnValue assignColumn)'''
 	«assignColumn.value.toString().split('val: ').get(1).substring(0, assignColumn.value.toString().split('val: ').get(1).length - 1)»'''
-	// «assignColumn.value.toString().split(' ').get(2).substring(0, assignColumn.value.toString().split(' ').get(2).length - 1)»'''
 	
 	def String generateAssignColumn(AssignColumnValue assignColumn)'''
 	«assignColumn.generateAssignColumnName»=«assignColumn.generateAssignColumnValue»'''
@@ -210,5 +222,74 @@ class FSQLGenerator extends AbstractGenerator {
 	 ALTER TABLE «modifyColumns.table.get(0).^var.name»
 	 MODIFY «if (modifyColumns.columns !== null) {'(' + modifyColumns.column.generateSQLColumns +',' + modifyColumns.columns.map[generateSQLColumns].join(',') + ')'}
 	 else {modifyColumns.column.generateSQLColumns}»;
+	 '''
+	 
+	 dispatch def String generateSQLTableCommand(SelectStatement selectStmt)'''
+	 «selectStmt.select.generateSelect(selectStmt.table.^var.name.toString())»;
+	 '''
+	 dispatch def String generateSelect(Select select, String table)''''''
+	 
+	 dispatch def String generateSelect(CollectionSelect select, String table)'''
+	 SELECT «select.column.generateSQLColumnNameReference»
+	 «if (!select.columns.empty) {
+	 	',' + select.columns.map[generateSQLColumnNameReference].join(',')
+	 }» FROM «table»'''
+	 
+	 dispatch def String generateSelect(AggregatedSelect select, String table)'''
+	 SELECT «select.aggregation.generateAggregation»(«select.select.column.generateSQLColumnNameReference») FROM «table»'''
+	 
+	 def String generateAggregation(Aggregation aggregation)'''
+	 «if (aggregation.aggregation.toString() == 'max()') {
+	 	'MAX'
+	 } else if (aggregation.aggregation.toString() == 'min()') { 
+	 	'MIN'
+	 } else if (aggregation.aggregation.toString() == 'count()') {
+	 	'COUNT'
+	 } else if (aggregation.aggregation.toString() == 'sum()'){
+	 	'SUM'
+	 } else {
+	 	'AVG'
+	 }»'''
+	 
+	 dispatch def String generateSelect(GroupedSelect select, String table)'''
+	 «select.select.generateSelect(table)» «select.groupBy.generateGroupBy»'''
+	 
+	 def String generateGroupBy(GroupByStmt groupStmt)'''
+	 «if (groupStmt.method.toString() == 'groupBy') {
+	 'GROUP BY' + ' ' + groupStmt.column.generateSQLColumnNameReference
+	 }»
+	 «if (groupStmt.having !== null) {
+	 	groupStmt.having.generateHavingStmt
+	 }»'''
+	 
+	 def String generateHavingStmt(HavingStmt havingStmt)'''
+	 «if (havingStmt.method.toString() == 'having') {
+	 	 'HAVING' + ' ' + havingStmt.query.map[generateQuery].join('')
+	 	 }»
+	 '''
+	 
+	 dispatch def String generateSelect(SortedSelect select, String table)'''
+	 «select.select.generateSelect(table)» «select.orderBy.generateOrderBy»'''
+	 
+	 def String generateOrderBy(OrderByStmt orderStmt)'''
+	 «if (orderStmt.method.toString() == 'orderBy') {
+	 'ORDER BY' + ' ' + orderStmt.column.generateSQLColumnNameReference
+	 }»
+	 «if (orderStmt.order !== null) {
+	 	orderStmt.order.generateOrder
+	 }»'''
+	 
+	 def String generateOrder(SortingOrder order)'''
+	 «if (order == SortingOrder.ASC) {
+	 	'ASC'
+	 } else {
+	 	'DESC'
+	 }»
+	 '''
+	 
+	 dispatch def String generateSelect(GroupSortedSelect select, String table)'''
+	 «select.select.generateSelect(table)» «select.groupBy.generateGroupBy» «select.orderBy.generateOrderBy»'''
+	 
+	 dispatch def String generateSQLTableCommand(Join join)'''
 	 '''
 }

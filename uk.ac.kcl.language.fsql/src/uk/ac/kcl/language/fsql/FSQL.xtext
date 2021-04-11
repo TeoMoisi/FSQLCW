@@ -109,11 +109,7 @@ ForeignKey:
 ;
 
 ColumnNameReference:
-	var = [ColumnDeclaration]
-;
-
-ColumnTypeModify:
-	column=ColumnNameReference ':' type=ColumnType
+	(table=TableDeclaration '.')? var = [ColumnDeclaration]
 ;
 
 CompositeKey:
@@ -214,19 +210,19 @@ CollectionSelect:
 ;
 
 AggregatedSelect:
-	method='select' '(' column=ColumnNameReference  (',' columns+=ColumnNameReference)* ')' '.' aggregation=Aggregation
+	select=CollectionSelect '.' aggregation=Aggregation
 ;
 
 GroupedSelect:
-	method='select' '(' column=ColumnNameReference  (',' columns+=ColumnNameReference)* ')' '.' groupBy=GroupByStmt
+	select=CollectionSelect '.' groupBy=GroupByStmt
 ;
 
 SortedSelect:
-	method='select' '(' column=ColumnNameReference  (',' columns+=ColumnNameReference)* ')' '.' orderBy=OrderByStmt
+	select=CollectionSelect '.' orderBy=OrderByStmt
 ;
 
 GroupSortedSelect:
-	method='select' '(' column=ColumnNameReference  (',' columns+=ColumnNameReference)* ')' '.' groupBy=GroupByStmt '.' orderBy=OrderByStmt
+	select=CollectionSelect '.' groupBy=GroupByStmt '.' orderBy=OrderByStmt
 ;
 
 GroupByStmt:
@@ -282,7 +278,7 @@ BoolType:
 ;
 
 Aggregation:
-	MinAggregation | MaxAggregation | CountAggregation | SumAggregation
+	MinAggregation | MaxAggregation | CountAggregation | SumAggregation | AverageAggregation
 ;
 	
 MinAggregation:
@@ -299,4 +295,8 @@ CountAggregation:
 
 SumAggregation:
 	aggregation='sum()'
+;
+
+AverageAggregation:
+	aggregation='avg()'
 ;
