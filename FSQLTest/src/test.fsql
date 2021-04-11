@@ -25,11 +25,13 @@ Table1.update(age = 6,name="Roadhbjhv")
 
 Table1.where(id gt 8 AND name eq "teo").update(age = 8,name="bjhbjh",address="jksnv")
 
-//Table1.where(age lt 20).select(age).max()
-//Table1.where(age gt 20).select(age).min()
+Table1.where(age lt 20).select(age).groupBy(address)
+Table1.where(age gt 20).select(age).min()
 //Table1.where(age lt 20).select(age).count()
 //Table1.where(age gt 20).select(age).sum()
 Table1.select(age).min()
+
+Table1.where(age gt 10).select(address).groupBy(address)
 
 Table1.select(name, age).orderBy(age,asc)
 //

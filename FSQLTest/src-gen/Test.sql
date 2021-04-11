@@ -28,7 +28,16 @@ SET age=8
 WHERE id>8
  AND name=teo
 
+SELECT age
+ FROM Table1 WHERE age<20
+ GROUP BY address
+
+
 SELECT MIN(age) FROM Table1;
+
+SELECT address
+ FROM Table1 WHERE age>10
+ GROUP BY address
 
 SELECT name
 ,age FROM Table1 ORDER BY age

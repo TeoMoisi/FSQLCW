@@ -54,6 +54,7 @@ import uk.ac.kcl.language.fsql.fSQL.SortedSelect
 import uk.ac.kcl.language.fsql.fSQL.OrderByStmt
 import uk.ac.kcl.language.fsql.fSQL.SortingOrder
 import uk.ac.kcl.language.fsql.fSQL.GroupSortedSelect
+import uk.ac.kcl.language.fsql.fSQL.Query
 
 /**
  * Generates code from your model files on save.
@@ -227,6 +228,7 @@ class FSQLGenerator extends AbstractGenerator {
 	 dispatch def String generateSQLTableCommand(SelectStatement selectStmt)'''
 	 «selectStmt.select.generateSelect(selectStmt.table.^var.name.toString())»;
 	 '''
+	 
 	 dispatch def String generateSelect(Select select, String table)''''''
 	 
 	 dispatch def String generateSelect(CollectionSelect select, String table)'''
@@ -289,6 +291,30 @@ class FSQLGenerator extends AbstractGenerator {
 	 
 	 dispatch def String generateSelect(GroupSortedSelect select, String table)'''
 	 «select.select.generateSelect(table)» «select.groupBy.generateGroupBy» «select.orderBy.generateOrderBy»'''
+	 
+	 dispatch def String generateSQLTableCommand(Query query)'''
+	 «query.select.generateQuerySelect(query.table.^var.name.toString(), query.whereClause)»
+	 '''
+	 
+	 dispatch def String generateQuerySelect(Select select, String table, WhereClause whereClause)''''''
+	 
+	 dispatch def String generateQuerySelect(CollectionSelect select, String table, WhereClause whereClause)'''
+	 SELECT «select.column.generateSQLColumnNameReference»
+	 «if (!select.columns.empty) {
+	 	',' + select.columns.map[generateSQLColumnNameReference].join(',')
+	 }» FROM «table» «whereClause.generateWhereClause»'''
+	 
+	 dispatch def String generateQuerySelect(GroupedSelect select, String table, WhereClause whereClause)'''
+	 «select.select.generateQuerySelect(table, whereClause)» «select.groupBy.generateGroupBy»;'''
+	 
+	 dispatch def String generateQuerySelect(SortedSelect select, String table, WhereClause whereClause)'''
+	 «select.select.generateQuerySelect(table, whereClause)» «select.orderBy.generateOrderBy»;'''
+	 
+	 dispatch def String generateQuerySelect(GroupSortedSelect select, String table, WhereClause whereClause)'''
+	 «select.select.generateQuerySelect(table, whereClause)» «select.groupBy.generateGroupBy» «select.orderBy.generateOrderBy»;'''
+	 
+//	 dispatch def String generateQuerySelect(AggregatedSelect select, String table, WhereClause whereClause)'''
+//	 SELECT «select.aggregation.generateAggregation»(«select.select.column.generateSQLColumnNameReference») FROM «table» «whereClause.generateWhereClause»'''
 	 
 	 dispatch def String generateSQLTableCommand(Join join)'''
 	 '''

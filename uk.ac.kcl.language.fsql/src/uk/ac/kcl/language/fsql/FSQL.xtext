@@ -242,11 +242,7 @@ enum SortingOrder:
 ;
 
 Query:
-	table=TableDeclaration '.' whereClause=WhereClause '.' select=Select (queryStmts=QueryStatement '()')? 
-;
-
-enum QueryStatement:
-	groupBy | orderBy
+	table=TableDeclaration '.' whereClause=WhereClause '.' select=Select 
 ;
 
 enum ConditionOperator:
