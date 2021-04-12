@@ -3,6 +3,19 @@
  */
 package uk.ac.kcl.language.fsql.validation
 
+import uk.ac.kcl.language.fsql.fSQL.AddRow
+import uk.ac.kcl.language.fsql.fSQL.FSQLPackage
+import uk.ac.kcl.language.fsql.fSQL.FSQL
+import org.eclipse.emf.common.util.EList
+import uk.ac.kcl.language.fsql.fSQL.TableStatements
+import uk.ac.kcl.language.fsql.fSQL.SchemaDeclaration
+import java.util.List
+import uk.ac.kcl.language.fsql.fSQL.ColumnDeclaration
+import uk.ac.kcl.language.fsql.fSQL.SimpleDeclaration
+import org.eclipse.xtext.validation.Check
+import uk.ac.kcl.language.fsql.fSQL.CreateTable
+import uk.ac.kcl.language.fsql.fSQL.TableStatement
+import uk.ac.kcl.language.fsql.fSQL.CreateDB
 
 /**
  * This class contains custom validation rules. 
@@ -11,15 +24,78 @@ package uk.ac.kcl.language.fsql.validation
  */
 class FSQLValidator extends AbstractFSQLValidator {
 	
-//	public static val INVALID_NAME = 'invalidName'
-//
-//	@Check
-//	def checkGreetingStartsWithCapital(Greeting greeting) {
-//		if (!Character.isUpperCase(greeting.name.charAt(0))) {
-//			warning('Name should start with a capital', 
-//					FSQLPackage.Literals.GREETING__NAME,
-//					INVALID_NAME)
-//		}
-//	}
+	public static val INVALID_NAME = 'invalidName'
+	public static val MISSING_DB = 'db not in use'
+
+
+	@Check(NORMAL)
+	def checkProgramStartsWithDB(FSQL program) {
+			if (!program.tableStatements.checkProgramStartsWithDB) {
+				warning('Missing database use', 
+						FSQLPackage.Literals.FSQL__DB_STATEMENTS,
+						MISSING_DB)
+			}
+	}
+	
+	def boolean checkProgramStartsWithDB(EList<TableStatements> statements) {
+		if (statements.get(0).class != CreateDB) {
+			return false;
+		} else {
+			return true;
+		}
+	}
+
+	@Check(NORMAL)
+	def checkAddRowsContainsAllColumns(FSQL program) {
+			if (program.tableStatements.checkAddRowsContainsAllColumns(true).length > 1) {
+				warning('Name should start with a capital', 
+						FSQLPackage.Literals.FSQL__TABLE_STATEMENTS,
+						INVALID_NAME)
+			}
+	}
+	
+	def  List<String> checkAddRowsContainsAllColumns(EList<TableStatements> statements, boolean state) {
+//		statements.fold(state, [prevState, stmt | 
+//			stmt.getSchemaColumns(prevState)
+//		])
+		
+		for (i : 0 .. statements.length - 1) {
+			statements.get(i).getSchemaColumns(state);
+		}
+		
+		var List<String> columns = newArrayList;
+		return columns;
+	}
+	
+	dispatch def getSchemaColumns(TableStatements statement, boolean state) {
+		var List<String> columns = newArrayList;
+		return columns;
+	}
+	
+	dispatch def getSchemaColumns(CreateTable statement, boolean state) {
+		var List<String> columns = newArrayList;
+		return columns;
+	}
+	
+	dispatch def getSchemaColumns(TableStatement statement, boolean state) {
+		var List<String> columns = newArrayList;
+		return columns;
+	}
+	
+	dispatch def getSchemaColumns(SchemaDeclaration schema, boolean state) {
+		println("SCHEMA");
+		var List<String> columns = newArrayList;
+		columns.add(schema.column.get(0).getColumnName);
+		println(schema.column.get(0).getColumnName);
+		return columns;
+	}
+	
+	dispatch def String getColumnName(ColumnDeclaration column) {
+		return '';
+	}
+	
+	dispatch def String getColumnName(SimpleDeclaration column) {
+		return column.getName().toString();
+	}
 	
 }
