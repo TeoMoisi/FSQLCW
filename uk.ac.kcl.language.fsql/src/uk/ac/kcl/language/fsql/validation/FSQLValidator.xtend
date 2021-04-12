@@ -17,6 +17,8 @@ import uk.ac.kcl.language.fsql.fSQL.CreateTable
 import uk.ac.kcl.language.fsql.fSQL.TableStatement
 import uk.ac.kcl.language.fsql.fSQL.CreateDB
 import uk.ac.kcl.language.fsql.fSQL.DatabaseStatements
+import uk.ac.kcl.language.fsql.fSQL.PrimaryKey
+import uk.ac.kcl.language.fsql.fSQL.ForeignKey
 
 /**
  * This class contains custom validation rules. 
@@ -25,8 +27,9 @@ import uk.ac.kcl.language.fsql.fSQL.DatabaseStatements
  */
 class FSQLValidator extends AbstractFSQLValidator {
 	
-	public static val INVALID_NAME = 'invalidName'
-	public static val MISSING_DB = 'db not in use'
+	public static val INVALID_NAME = 'invalidName';
+	public static val MISSING_DB = 'db not in use';
+	public static val INVALID_ADD_ROW = 'columns missing';
 
 
 	@Check(NORMAL)
@@ -40,47 +43,97 @@ class FSQLValidator extends AbstractFSQLValidator {
 
 	@Check(NORMAL)
 	def checkAddRowsContainsAllColumns(FSQL program) {
-			if (program.tableStatements.checkAddRowsContainsAllColumns(true).length > 1) {
-				warning('Name should start with a capital', 
+			if (!program.tableStatements.checkAddRowsContainsAllColumns(true)) {
+				warning('Check again AddRow statements to contain all columns!', 
 						FSQLPackage.Literals.FSQL__TABLE_STATEMENTS,
-						INVALID_NAME)
+						INVALID_ADD_ROW)
 			}
 	}
 	
-	def  List<String> checkAddRowsContainsAllColumns(EList<TableStatements> statements, boolean state) {
-//		statements.fold(state, [prevState, stmt | 
-//			stmt.getSchemaColumns(prevState)
-//		])
+	def  boolean checkAddRowsContainsAllColumns(EList<TableStatements> statements, boolean state) {
+		var List<List<String>> schemas = newArrayList;
+		var List<List<String>> rows = newArrayList;
 		
-		statements.get(1).getSchemaColumns(state);
 		for (i : 0 .. statements.length - 1) {
-			statements.get(i).getSchemaColumns(state);
+			var className = statements.get(i).class.typeName.toString().split('impl.').get(1);
+			var col = statements.get(i).getColumns(state);
+			
+			if (className == 'SchemaDeclarationImpl') {
+				schemas.add(col);
+			} else if ((className == 'AddRowImpl')) {
+				rows.add(col)
+			}
+		}
+
+		
+		var List<String> res = newArrayList;
+		for (j: 0 .. rows.length - 1) {
+			var result = checkColumns(schemas, rows.get(j));
+			println("RESULT: " + result.toString());
+			res.add(result.toString());
 		}
 		
+		if (res.contains('false')) {
+			return false;
+		} else {
+			return true;
+		}
+	}
+	
+	def boolean checkColumns(List<List<String>> schemas, List<String> row) {
+		for (j: 0 .. schemas.length - 1) {
+			println("SCHEMA LIST: " + schemas.get(j));
+			println("ROW LIST: " + row);
+			if (schemas.get(j).get(0) == row.get(0)) {
+				println("COMPARE");
+				return compareLists(schemas.get(j), row);
+			}
+		}
+	}
+	
+	def boolean compareLists(List<String> original, List<String> copy) {
+		for (i: 1..original.length - 1) {
+			if (!copy.contains(original.get(i)) ) {
+				return false;
+			}
+		}
+		
+		return true;
+	}
+	
+	dispatch def getColumns(TableStatements statement, boolean state) {
 		var List<String> columns = newArrayList;
 		return columns;
 	}
 	
-	dispatch def getSchemaColumns(TableStatements statement, boolean state) {
+	dispatch def getColumns(CreateTable statement, boolean state) {
 		var List<String> columns = newArrayList;
 		return columns;
 	}
 	
-	dispatch def getSchemaColumns(CreateTable statement, boolean state) {
+	dispatch def getColumns(TableStatement statement, boolean state) {
 		var List<String> columns = newArrayList;
 		return columns;
 	}
 	
-	dispatch def getSchemaColumns(TableStatement statement, boolean state) {
+	dispatch def getColumns(SchemaDeclaration schema, boolean state) {
+		println("TABLE: " + schema.table.get(0).^var.name);
 		var List<String> columns = newArrayList;
-		return columns;
-	}
-	
-	dispatch def getSchemaColumns(SchemaDeclaration schema, boolean state) {
-		println("SCHEMA");
-		var List<String> columns = newArrayList;
-		columns.add(schema.column.get(0).getColumnName);
-		println(schema.column.get(0).getColumnName);
+		columns.add(schema.table.get(0).^var.name.toString());
+		
+		var column = schema.column.get(0).getColumnName;
+		
+		if (column != '') {
+				columns.add(column);
+		}
+		
+		for (i: 0 .. schema.columns.length - 1) {
+			column = schema.columns.get(i).getColumnName;
+			
+			if (column != '') {
+				columns.add(column);
+			}
+		}
 		return columns;
 	}
 	
@@ -92,4 +145,27 @@ class FSQLValidator extends AbstractFSQLValidator {
 		return column.getName().toString();
 	}
 	
+	dispatch def String getColumnName(PrimaryKey column) {
+		return column.column.getColumnName;
+	}
+	
+	dispatch def getColumns(AddRow row, boolean state) {
+		println("TABLE add row: " + row.table.get(0).^var.name);
+		var List<String> columns = newArrayList;
+
+		columns.add(row.table.get(0).^var.name.toString());
+		for (i: 0 .. row.row.length - 1) {
+			columns.add(row.row.get(i).column.column.^var.columnName);
+			println(row.row.get(i).column.column.^var.columnName);
+			
+			if (row.row.get(i).columns.length != 0) {
+				for (j: 0 .. row.row.get(i).columns.length - 1) {
+					columns.add(row.row.get(i).columns.get(j).column.^var.columnName);
+					println(row.row.get(i).columns.get(j).column.^var.columnName);
+				}	
+			}
+			
+		}
+		return columns;
+	}
 }
