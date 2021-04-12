@@ -8,7 +8,7 @@ CREATE TABLE Table1(
 	isAdult NUMBER(1),
 	age INT
 );
-INSERT INTO Table1 (id,name,age,isAdult) VALUES (5,Teofana Moisi,65.7,false);
+INSERT INTO Table1 (id,name,age,isAdult) VALUES (8,Teofana Moisi,65.7,false);
 INSERT INTO Table1 (id,name,age,isAdult) VALUES (9,John,7,false), (0,Julia,10,false);
 
 CREATE TABLE Table2(
@@ -24,3 +24,4 @@ CREATE TABLE Table3(
 	city VARCHAR(255),
 	PRIMARY KEY (address,name,city)
 );
+DROP TABLE Table1;

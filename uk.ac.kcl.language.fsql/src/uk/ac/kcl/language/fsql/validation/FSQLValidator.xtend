@@ -15,18 +15,16 @@ import uk.ac.kcl.language.fsql.fSQL.SimpleDeclaration
 import org.eclipse.xtext.validation.Check
 import uk.ac.kcl.language.fsql.fSQL.CreateTable
 import uk.ac.kcl.language.fsql.fSQL.TableStatement
-import uk.ac.kcl.language.fsql.fSQL.CreateDB
-import uk.ac.kcl.language.fsql.fSQL.DatabaseStatements
 import uk.ac.kcl.language.fsql.fSQL.PrimaryKey
-import uk.ac.kcl.language.fsql.fSQL.ForeignKey
 import uk.ac.kcl.language.fsql.fSQL.AddRows
+import uk.ac.kcl.language.fsql.typing.validation.FSQLTypeSystemValidator
 
 /**
  * This class contains custom validation rules. 
  *
  * See https://www.eclipse.org/Xtext/documentation/303_runtime_concepts.html#validation
  */
-class FSQLValidator extends AbstractFSQLValidator {
+class FSQLValidator extends FSQLTypeSystemValidator {
 	
 	public static val INVALID_NAME = 'invalidName';
 	public static val MISSING_DB = 'db not in use';
@@ -36,7 +34,7 @@ class FSQLValidator extends AbstractFSQLValidator {
 	@Check(NORMAL)
 	def checkProgramStartsWithDB(FSQL program) {
 			if (program.dbStatements.length < 1) {
-				warning('Missing database use', 
+				error('Missing database use', 
 						FSQLPackage.Literals.FSQL__DB_STATEMENTS,
 						MISSING_DB)
 			}
