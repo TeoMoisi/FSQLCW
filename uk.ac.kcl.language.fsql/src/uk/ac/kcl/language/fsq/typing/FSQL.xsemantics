@@ -6,6 +6,7 @@ import uk.ac.kcl.language.fsq.typing.FSQLType
 import uk.ac.kcl.language.fsql.fSQL.AssignColumnValue
 import uk.ac.kcl.language.fsql.fSQL.StringType
 import uk.ac.kcl.language.fsql.fSQL.BoolType
+import uk.ac.kcl.language.fsql.fSQL.Condition
 
 system uk.ac.kcl.language.fsql.typing.FSQLTypeSystem
 
@@ -31,7 +32,7 @@ auxiliary typeExpressions(Iterable<ColumnValueType> exps) {
 	} else if (exps.forall[exp | 
 			empty |- exp : var FSQLType exp2Type 
 			exp2Type === FSQLType.FLOAT]){
-		return FSQLType.INT
+		return FSQLType.FLOAT
 	} else if (exps.forall[exp | 
 			empty |- exp : var FSQLType exp2Type 
 			exp2Type === FSQLType.STRING]){
@@ -48,18 +49,13 @@ from {
 	right === FSQLType.FLOAT or left === right
 }
 
-//rule StringTyping
-//	G |- ColumnValueType decl : FSQLType t
-//from {
-//	t  = (decl).typeExpressions
-//}
-
 axiom IntLiteral 
 	G |- IntType decl : FSQLType.INT
 	
 axiom RealLiteral 
 	G |- RealType decl : FSQLType.FLOAT
 	
+// both STRING and BOOL return INT because we only want to compare INT and FLOAT types
 axiom StringLiteral 
 	G |- StringType decl : FSQLType.INT
 	
@@ -70,5 +66,12 @@ checkrule checkAssignColumnValue for
 	AssignColumnValue stmt
 from {
 	empty |- stmt.value : var FSQLType colType
+	empty |- colType <: FSQLType.INT
+}
+
+checkrule checkCondition for
+	Condition cond
+from {
+	empty |- cond.value : var FSQLType colType
 	empty |- colType <: FSQLType.INT
 }

@@ -8,8 +8,12 @@ CREATE TABLE Table1(
 	isAdult NUMBER(1),
 	age INT
 );
-INSERT INTO Table1 (id,name,age,isAdult) VALUES (8,Teofana Moisi,65.7,false);
-INSERT INTO Table1 (id,name,age,isAdult) VALUES (9,John,7,false), (0,Julia,10,false);
+INSERT INTO Table1 (id,name,age,isAdult) VALUES (8,Teofana Moisi,65,true);
+INSERT INTO Table1 (id,name,age,isAdult) VALUES (9,John,7,false), (9,Julia,10,false);
+DELETE FROM Table1 WHERE age<=1
+ AND id<6
+ OR name=Teofana
+;
 
 CREATE TABLE Table2(
 	id INT PRIMARY KEY,
