@@ -1,8 +1,8 @@
 // create database DB1
 
-//create database DB1
-//
-// use database DB1
+create database DB1
+
+ use database DB1
 
 Table1.init() 
 

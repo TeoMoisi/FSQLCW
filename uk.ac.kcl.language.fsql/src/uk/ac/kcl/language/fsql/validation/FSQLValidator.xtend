@@ -16,6 +16,7 @@ import org.eclipse.xtext.validation.Check
 import uk.ac.kcl.language.fsql.fSQL.CreateTable
 import uk.ac.kcl.language.fsql.fSQL.TableStatement
 import uk.ac.kcl.language.fsql.fSQL.CreateDB
+import uk.ac.kcl.language.fsql.fSQL.DatabaseStatements
 
 /**
  * This class contains custom validation rules. 
@@ -30,19 +31,11 @@ class FSQLValidator extends AbstractFSQLValidator {
 
 	@Check(NORMAL)
 	def checkProgramStartsWithDB(FSQL program) {
-			if (!program.tableStatements.checkProgramStartsWithDB) {
+			if (program.dbStatements.length < 1) {
 				warning('Missing database use', 
 						FSQLPackage.Literals.FSQL__DB_STATEMENTS,
 						MISSING_DB)
 			}
-	}
-	
-	def boolean checkProgramStartsWithDB(EList<TableStatements> statements) {
-		if (statements.get(0).class != CreateDB) {
-			return false;
-		} else {
-			return true;
-		}
 	}
 
 	@Check(NORMAL)
@@ -59,6 +52,7 @@ class FSQLValidator extends AbstractFSQLValidator {
 //			stmt.getSchemaColumns(prevState)
 //		])
 		
+		statements.get(1).getSchemaColumns(state);
 		for (i : 0 .. statements.length - 1) {
 			statements.get(i).getSchemaColumns(state);
 		}
