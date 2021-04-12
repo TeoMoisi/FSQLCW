@@ -101,23 +101,19 @@ SimpleDeclaration:
 ;
 
 PrimaryKey:
-	name=ID ':' type=ColumnType 'as' 'primary' 'key'
+	column=SimpleDeclaration 'as' 'primary' 'key'
 ;
 
 ForeignKey:
-	name=ID ':' type=ColumnType 'references' table+=TableDeclaration
+	column=ColumnNameReference 'references' table+=TableDeclaration
 ;
 
 ColumnNameReference:
-	var = [ColumnDeclaration]
-;
-
-ColumnTypeModify:
-	column=ColumnNameReference ':' type=ColumnType
+	(table=TableDeclaration '.')? var = [ColumnDeclaration]
 ;
 
 CompositeKey:
-	'(' col1=ColumnNameReference ',' col2=ColumnNameReference (',' col+=ColumnNameReference)* ')' 'as' 'primary' 'key'
+	'(' column=ColumnNameReference (',' columns+=ColumnNameReference)* ')' 'as' 'primary' 'key'
 ;
 
 enum ColumnType:
@@ -146,7 +142,7 @@ DropColumns:
 ;
 
 ModifyColumns:
-	table+=TableDeclaration '.' 'modify' '(' column=ColumnTypeModify (','columns+=ColumnTypeModify )* ')'
+	table+=TableDeclaration '.' 'modify' '(' column=ColumnDeclaration (','columns+=ColumnDeclaration )* ')'
 ;
 
 AssignColumnValue:
@@ -154,7 +150,7 @@ AssignColumnValue:
 ;
 
 RowDeclaration:
-	'{' column=AssignColumnValue ',' ( columns+=AssignColumnValue )* '}'
+	'{' column=AssignColumnValue (',' columns+=AssignColumnValue )* '}'
 ;
 
 AddRow:
@@ -162,11 +158,11 @@ AddRow:
 ;
 
 AddRows:
-	table+=TableDeclaration '.' 'addRows' '(' row=RowDeclaration ',' (rows+=RowDeclaration)* ')'
+	table+=TableDeclaration '.' 'addRows' '(' row=RowDeclaration (',' rows+=RowDeclaration)* ')'
 ;
 
 Update:
-	table+=TableDeclaration ('.' whereClause=WhereClause )? '.' 'update(' column=AssignColumnValue (',')? ( columns+=AssignColumnValue )* ')'
+	table+=TableDeclaration ('.' whereClause=WhereClause )? '.' 'update(' column=AssignColumnValue ( ',' columns+=AssignColumnValue )* ')'
 ;
 
 Delete:
@@ -174,7 +170,15 @@ Delete:
 ;
 
 WhereClause:
-	'where' '(' query+=Condition  (',' query+=Condition )* ')'
+	'where' '(' query+=Condition  cond+=ConditionalOperator* ')'
+;
+
+ConditionalOperator:
+	operator=Operator queries=Condition
+;
+
+enum Operator:
+	AND | OR
 ;
 
 Condition:
@@ -182,7 +186,7 @@ Condition:
 ;
 
 TableColumnsCondition:
-	table1=TableDeclaration '.' column1=ColumnNameReference '=' table2=TableDeclaration '.' column2=ColumnNameReference
+	column1=ColumnNameReference '=' column2=ColumnNameReference
 ;
 
 Join:
@@ -198,7 +202,11 @@ SelectStatement:
 ;
 
 Select: 
-	CollectionSelect | AggregatedSelect | GroupedSelect | SortedSelect | GroupSortedSelect
+	SelectAll | CollectionSelect | AggregatedSelect | GroupedSelect | SortedSelect | GroupSortedSelect
+;
+
+SelectAll:
+	select='*'
 ;
 
 CollectionSelect:
@@ -206,19 +214,19 @@ CollectionSelect:
 ;
 
 AggregatedSelect:
-	method='select' '(' column=ColumnNameReference  (',' columns+=ColumnNameReference)* ')' '.' aggregation=Aggregation
+	select=CollectionSelect '.' aggregation=Aggregation
 ;
 
 GroupedSelect:
-	method='select' '(' column=ColumnNameReference  (',' columns+=ColumnNameReference)* ')' '.' groupBy=GroupByStmt
+	select=CollectionSelect '.' groupBy=GroupByStmt
 ;
 
 SortedSelect:
-	method='select' '(' column=ColumnNameReference  (',' columns+=ColumnNameReference)* ')' '.' orderBy=OrderByStmt
+	select=CollectionSelect '.' orderBy=OrderByStmt
 ;
 
 GroupSortedSelect:
-	method='select' '(' column=ColumnNameReference  (',' columns+=ColumnNameReference)* ')' '.' groupBy=GroupByStmt '.' orderBy=OrderByStmt
+	select=CollectionSelect '.' groupBy=GroupByStmt '.' orderBy=OrderByStmt
 ;
 
 GroupByStmt:
@@ -238,18 +246,14 @@ enum SortingOrder:
 ;
 
 Query:
-	table=TableDeclaration '.' whereClause=WhereClause '.' select=Select (queryStmts=QueryStatement '()')? 
-;
-
-enum QueryStatement:
-	groupBy | orderBy
+	table=TableDeclaration '.' whereClause=WhereClause '.' select=Select 
 ;
 
 enum ConditionOperator:
 	lt | gt | eq | lte | gte | ne
 ;
 
-ColumnValueType returns Expression:
+ColumnValueType:
 	IntType | RealType | StringType | BoolType
 ;
 
@@ -269,12 +273,12 @@ StringType:
 	val = STRING
 ;
 
-BoolType :
-	val = "true" | {BoolType} "false"
+BoolType:
+	val = ("true" | "false")
 ;
 
 Aggregation:
-	MinAggregation | MaxAggregation | CountAggregation | SumAggregation
+	MinAggregation | MaxAggregation | CountAggregation | SumAggregation | AverageAggregation
 ;
 	
 MinAggregation:
@@ -291,4 +295,8 @@ CountAggregation:
 
 SumAggregation:
 	aggregation='sum()'
+;
+
+AverageAggregation:
+	aggregation='avg()'
 ;

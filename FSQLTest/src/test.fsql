@@ -1,36 +1,45 @@
-
 create database DB1
 
+//create database DB1
+//
 use database DB1
 
 Table1.init() 
 
-Table1.schema(id : INT as primary key, name : BOOL )
+Table1.schema(id : INT as primary key, name : STRING, isAdult: BOOL, age: INT)
 
 Table1.addColumn(age:INT)
 
-Table1.addRow({name = "Teofana",age = 5})
+Table1.addRow({name = "Teofana Moisi",age = 65.7, isAdult=false})
 
 Table1.addRows({name = "John",age=7},{name="Julia" ,age=10})
 
 //// error if we want to access col1
 //// Table1.where(col1 lt 6).delete()
 //
-Table1.where(age eq 1).delete()
+Table1.where(age lte 1 AND id lt 6 OR name eq 'Teofana').delete()
 
 Table1.delete()
 
-Table1.update(age = 6)
+Table1.update(age = 6,name="Roadhbjhv")
 
-Table1.where(id gt 8).update(age = 8)
+Table1.where(id gt 8 AND name eq "teo").update(age = 8,name="bjhbjh",address="jksnv")
 
-Table1.where(age lt 20).select(age).max()
+Table1.where(age lt 20).select(age).groupBy(address)
 Table1.where(age gt 20).select(age).min()
-Table1.where(age lt 20).select(age).count()
-Table1.where(age gt 20).select(age).sum()
-Table1.select(age).max()
+//Table1.where(age lt 20).select(age).count()
+//Table1.where(age gt 20).select(age).sum()
+Table1.select(age).min()
 
-Table1.select(name, age).groupBy(age).having(age gt 18).orderBy(age,asc)
+Table1.where(age gt 10).select(address).groupBy(address)
+
+Table1.select(name, age).orderBy(age,asc)
+//
+Table1.select(name, age).groupBy(age).orderBy(age,asc)
+
+Table1.select(Table1.name, age)
+
+Table1.*
 
 Table1.addColumn(col3:BOOL)
 
@@ -43,7 +52,13 @@ Table1.modify(col4:BOOL,col5:STRING)
 
 Table2.init()
 
-Table2.schema(id:INT as primary key, name : STRING references Table1)
+Table2.schema(id:INT as primary key, name : STRING, name references Table1)
 //
 Table1.innerJoin(Table2).on(Table1.name = Table2.name).where(id eq 1).select(name, age)
 Table1.leftJoin(Table2).on(Table1.name = Table2.name).select(name,age)
+
+Table3.init()
+
+Table3.schema(address:STRING, name:STRING, city: STRING, (address, name, city) as primary key)
+
+Table1.drop()
