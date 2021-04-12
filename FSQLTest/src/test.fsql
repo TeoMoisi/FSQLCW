@@ -12,7 +12,7 @@ Table1.schema(id:INT as primary key, name : STRING, isAdult: BOOL, age: INT)
 //
 Table1.addRow({id= 5, name = "Teofana Moisi",age = 65.7, isAdult=false})
 //
-//Table1.addRows({name = "John",age=7},{name="Julia" ,age=10})
+Table1.addRows({id = 9, name = "John",age=7, isAdult = false},{id = 0, name="Julia" ,age=10, isAdult = false})
 //
 ////// error if we want to access col1
 ////// Table1.where(col1 lt 6).delete()
@@ -54,7 +54,7 @@ Table2.init()
 
 Table2.schema(id:INT as primary key, name : STRING, name references Table1)
 
-Table2.addRow({name = "Teofana Moisi"})
+Table2.addRow({id = 8, name = "Teofana Moisi"})
 //
 //Table1.innerJoin(Table2).on(Table1.name = Table2.name).where(id eq 1).select(name, age)
 //Table1.leftJoin(Table2).on(Table1.name = Table2.name).select(name,age)

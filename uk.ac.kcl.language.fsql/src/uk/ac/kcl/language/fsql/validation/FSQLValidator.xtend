@@ -19,6 +19,7 @@ import uk.ac.kcl.language.fsql.fSQL.CreateDB
 import uk.ac.kcl.language.fsql.fSQL.DatabaseStatements
 import uk.ac.kcl.language.fsql.fSQL.PrimaryKey
 import uk.ac.kcl.language.fsql.fSQL.ForeignKey
+import uk.ac.kcl.language.fsql.fSQL.AddRows
 
 /**
  * This class contains custom validation rules. 
@@ -56,12 +57,17 @@ class FSQLValidator extends AbstractFSQLValidator {
 		
 		for (i : 0 .. statements.length - 1) {
 			var className = statements.get(i).class.typeName.toString().split('impl.').get(1);
-			var col = statements.get(i).getColumns(state);
+			var List<List<String>> col = statements.get(i).getColumns(state);
 			
 			if (className == 'SchemaDeclarationImpl') {
-				schemas.add(col);
-			} else if ((className == 'AddRowImpl')) {
-				rows.add(col)
+				schemas.add(col.get(0));
+			} else if (className == 'AddRowImpl') {
+				rows.add(col.get(0))
+			} else if (className == 'AddRowsImpl') {
+				println("ADD ROWS result: " + col);
+				for (j: 0..col.length - 1) {
+					rows.add(col.get(j));
+				}
 			}
 		}
 
@@ -102,17 +108,17 @@ class FSQLValidator extends AbstractFSQLValidator {
 	}
 	
 	dispatch def getColumns(TableStatements statement, boolean state) {
-		var List<String> columns = newArrayList;
+		var List<List<String>> columns = newArrayList;
 		return columns;
 	}
 	
 	dispatch def getColumns(CreateTable statement, boolean state) {
-		var List<String> columns = newArrayList;
+		var List<List<String>> columns = newArrayList;
 		return columns;
 	}
 	
 	dispatch def getColumns(TableStatement statement, boolean state) {
-		var List<String> columns = newArrayList;
+		var List<List<String>> columns = newArrayList;
 		return columns;
 	}
 	
@@ -134,7 +140,10 @@ class FSQLValidator extends AbstractFSQLValidator {
 				columns.add(column);
 			}
 		}
-		return columns;
+		
+		var List<List<String>> result = newArrayList;
+		result.add(columns);
+		return result;
 	}
 	
 	dispatch def String getColumnName(ColumnDeclaration column) {
@@ -166,6 +175,47 @@ class FSQLValidator extends AbstractFSQLValidator {
 			}
 			
 		}
-		return columns;
+		var List<List<String>> result = newArrayList;
+		result.add(columns);
+		return result;
+	}
+	
+	dispatch def getColumns(AddRows rows, boolean state) {
+		println("TABLE add rows: " + rows.table.get(0).^var.name);
+		var List<List<String>> allColumns = newArrayList;
+		
+		var List<String> columns = newArrayList;
+
+		columns.add(rows.table.get(0).^var.name.toString());
+		
+		columns.add(rows.row.column.column.^var.columnName);
+		println(rows.row.column.column.^var.columnName);
+		
+		if (rows.row.columns.length != 0) {
+			for (i: 0 .. rows.row.columns.length - 1) {
+				columns.add(rows.row.columns.get(i).column.^var.columnName);
+				println(rows.row.columns.get(i).column.^var.columnName);
+			}
+		}
+		
+		allColumns.add(columns);
+		
+		for (i: 0 .. rows.rows.length - 1) {
+			var List<String> cols = newArrayList;
+			
+			println("TABLE add rows: " + rows.table.get(0).^var.name);
+			cols.add(rows.table.get(0).^var.name.toString());
+			cols.add(rows.rows.get(i).column.column.^var.columnName);
+			println(rows.rows.get(i).column.column.^var.columnName);
+			
+			if (rows.rows.get(i).columns.length != 0) {
+				for (j: 0 .. rows.rows.get(i).columns.length - 1) {
+					cols.add(rows.rows.get(i).columns.get(j).column.^var.columnName);
+					println(rows.rows.get(i).columns.get(j).column.^var.columnName);
+				}	
+			}
+			allColumns.add(cols);
+		}
+		return allColumns;
 	}
 }
