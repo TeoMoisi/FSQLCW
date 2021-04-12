@@ -70,15 +70,19 @@ class FSQLValidator extends FSQLTypeSystemValidator {
 		}
 
 		
-		var List<String> res = newArrayList;
-		for (j: 0 .. rows.length - 1) {
-			var result = checkColumns(schemas, rows.get(j));
-			println("RESULT: " + result.toString());
-			res.add(result.toString());
-		}
-		
-		if (res.contains('false')) {
-			return false;
+		if (rows.length != 0) {
+			var List<String> res = newArrayList;
+			for (j: 0 .. rows.length - 1) {
+				var result = checkColumns(schemas, rows.get(j));
+				println("RESULT: " + result.toString());
+				res.add(result.toString());
+			}
+			
+			if (res.contains('false')) {
+				return false;
+			} else {
+				return true;
+			}
 		} else {
 			return true;
 		}

@@ -72,6 +72,8 @@ from {
 checkrule checkCondition for
 	Condition cond
 from {
-	empty |- cond.value : var FSQLType colType
-	empty |- colType <: FSQLType.INT
+	if (cond.^condition.getName() === 'eq') {
+		empty |- cond.value : var FSQLType colType
+		empty |- colType <: FSQLType.INT
+	}
 }
