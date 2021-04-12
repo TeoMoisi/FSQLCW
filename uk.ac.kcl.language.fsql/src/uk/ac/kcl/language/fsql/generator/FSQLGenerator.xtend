@@ -55,6 +55,9 @@ import uk.ac.kcl.language.fsql.fSQL.OrderByStmt
 import uk.ac.kcl.language.fsql.fSQL.SortingOrder
 import uk.ac.kcl.language.fsql.fSQL.GroupSortedSelect
 import uk.ac.kcl.language.fsql.fSQL.Query
+import uk.ac.kcl.language.fsql.fSQL.JoinType
+import uk.ac.kcl.language.fsql.fSQL.TableColumnsCondition
+import uk.ac.kcl.language.fsql.fSQL.SelectAll
 
 /**
  * Generates code from your model files on save.
@@ -111,9 +114,9 @@ class FSQLGenerator extends AbstractGenerator {
 	
 	dispatch def String generateSQLTableCommand(SchemaDeclaration schema)'''
 		CREATE TABLE «schema.table.get(0).^var.name»(
-			«schema.column.map[generateSQLColumns].join('')»
-			«schema.columns.map[generateSQLColumns].join('\n')»
-		)'''
+			«schema.column.map[generateSQLColumns].join('') + if (schema.columns !== null) {','}»
+			«if (schema.columns !== null) {schema.columns.map[generateSQLColumns].join(',\n')}»
+		);'''
 	
 	// this will generate SQL code for each column declaration
 	dispatch def String generateSQLColumns(ColumnDeclaration column)''''''
@@ -151,7 +154,7 @@ class FSQLGenerator extends AbstractGenerator {
 		{'DELETE * FROM '+ deleteCommand.table.get(0).^var.name} 
 	else
 		{ 'DELETE FROM ' + deleteCommand.table.get(0).^var.name + ' ' + deleteCommand.whereClause.generateWhereClause}
-	»'''
+	»;'''
 	
 	def String generateWhereClause(WhereClause whereClause)'''
 	 WHERE «whereClause.query.get(0).generateQuery»
@@ -194,8 +197,7 @@ class FSQLGenerator extends AbstractGenerator {
 	 «if (updateCommand.columns !== null) {',' + updateCommand.columns.map[generateAssignColumn].join(',')}»
 	 «if (updateCommand.whereClause !== null) {
 	 	updateCommand.whereClause.generateWhereClause
-	 }»
-	 '''
+	 }»;'''
 	 
 	 dispatch def String generateSQLTableCommand(AlterTable alterCommand)''''''
 	 
@@ -230,6 +232,9 @@ class FSQLGenerator extends AbstractGenerator {
 	 '''
 	 
 	 dispatch def String generateSelect(Select select, String table)''''''
+	 
+	 dispatch def String generateSelect(SelectAll select, String table)'''
+	 SELECT * FROM «table»'''
 	 
 	 dispatch def String generateSelect(CollectionSelect select, String table)'''
 	 SELECT «select.column.generateSQLColumnNameReference»
@@ -298,6 +303,9 @@ class FSQLGenerator extends AbstractGenerator {
 	 
 	 dispatch def String generateQuerySelect(Select select, String table, WhereClause whereClause)''''''
 	 
+	 dispatch def String generateQuerySelect(SelectAll select, String table, WhereClause whereClause)'''
+	 SELECT * FROM «table» «whereClause.generateWhereClause»;'''
+	 
 	 dispatch def String generateQuerySelect(CollectionSelect select, String table, WhereClause whereClause)'''
 	 SELECT «select.column.generateSQLColumnNameReference»
 	 «if (!select.columns.empty) {
@@ -317,5 +325,29 @@ class FSQLGenerator extends AbstractGenerator {
 //	 SELECT «select.aggregation.generateAggregation»(«select.select.column.generateSQLColumnNameReference») FROM «table» «whereClause.generateWhereClause»'''
 	 
 	 dispatch def String generateSQLTableCommand(Join join)'''
+	 SELECT «join.selection.generateJoinSelect» FROM «join.table1.^var.name» «join.joinType.generateJoin» «join.table2.^var.name» ON «join.joinCondition.map[generateJoinCondition].join('')» 
+	 '''
+	 
+	 dispatch def String generateJoinSelect(Select select)''''''
+	 
+	 dispatch def String generateJoinSelect(CollectionSelect select)'''
+	 «select.column.generateSQLColumnNameReference»
+	 «if (!select.columns.empty) {',' + select.columns.map[generateSQLColumnNameReference].join(',')}»
+	 '''
+	 
+	 def String generateJoin(JoinType join)'''
+	 «if (join == JoinType.INNER_JOIN) {
+	 	'INNER JOIN'
+	 } else if (join == JoinType.LEFT_JOIN) {
+	 	'LEFT JOIN'
+	 } else if(join == JoinType.RIGHT_JOIN) {
+	 	'RIGHT JOIN'
+	 } else {
+	 	'FULL JOIN'
+	 }»
+	 '''
+	 
+	 def String generateJoinCondition(TableColumnsCondition condition)'''
+	 «condition.column1.generateSQLColumnNameReference» = «condition.column2.generateSQLColumnNameReference»
 	 '''
 }

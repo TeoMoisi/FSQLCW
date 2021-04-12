@@ -186,7 +186,7 @@ Condition:
 ;
 
 TableColumnsCondition:
-	table1=TableDeclaration '.' column1=ColumnNameReference '=' table2=TableDeclaration '.' column2=ColumnNameReference
+	column1=ColumnNameReference '=' column2=ColumnNameReference
 ;
 
 Join:
@@ -202,7 +202,11 @@ SelectStatement:
 ;
 
 Select: 
-	CollectionSelect | AggregatedSelect | GroupedSelect | SortedSelect | GroupSortedSelect
+	SelectAll | CollectionSelect | AggregatedSelect | GroupedSelect | SortedSelect | GroupSortedSelect
+;
+
+SelectAll:
+	select='*'
 ;
 
 CollectionSelect:

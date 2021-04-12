@@ -39,6 +39,8 @@ Table1.select(name, age).groupBy(age).orderBy(age,asc)
 
 Table1.select(Table1.name, age)
 
+Table1.*
+
 Table1.addColumn(col3:BOOL)
 
 Table1.addColumns(col4:FLOAT,(col3,col4) as primary key,col5:INT)
@@ -50,8 +52,7 @@ Table1.modify(col4:BOOL,col5:STRING)
 
 Table2.init()
 
-Table2.schema(id:INT as primary key, name : STRING, name references Table1
-)
+Table2.schema(id:INT as primary key, name : STRING, name references Table1)
 //
 Table1.innerJoin(Table2).on(Table1.name = Table2.name).where(id eq 1).select(name, age)
 Table1.leftJoin(Table2).on(Table1.name = Table2.name).select(name,age)
