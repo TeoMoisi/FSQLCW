@@ -1,0 +1,12 @@
+/* XPECT_SETUP uk.ac.kcl.language.fsql.xpect.XPectTests END_SETUP */
+
+create database DB1
+
+use database DB1
+
+Table1.init() 
+
+Table1.schema(id:INT as primary key, name : STRING, isAdult: BOOL, age: INT)
+
+// XPECT errors --> "failed: FLOAT is not a subtype of INT" at "age = 65.6"
+Table1.addRow({id= 8, name = "Teofana Moisi",age = 65.6, isAdult= true})
