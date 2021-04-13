@@ -1,0 +1,9 @@
+create database DB1
+
+use database DB1
+
+Table1.init() 
+
+Table1.schema(id:INT as primary key, name : STRING, isAdult: BOOL, age: INT)
+
+Table1.drop()

@@ -1,0 +1,10 @@
+/* XPECT_SETUP uk.ac.kcl.language.fsql.xpect.XPectTests END_SETUP */
+
+create database DB1
+
+use database DB1
+
+// XPECT warnings --> "Check again AddRow statements to contain all columns!" at "Table1.init()"
+Table1.init() 
+Table1.schema(id:INT as primary key, name : STRING, isAdult: BOOL, age: INT)
+Table1.addRow({id= 1, name = "John Doe",age = 65})

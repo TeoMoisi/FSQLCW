@@ -1,0 +1,5 @@
+/* XPECT_SETUP uk.ac.kcl.language.fsql.xpect.XPectTests END_SETUP */
+
+// XPECT errors --> "Missing database use" at "Table1.init() Table1.drop()"
+Table1.init() 
+Table1.drop()

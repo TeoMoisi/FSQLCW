@@ -1,0 +1,26 @@
+/* XPECT_SETUP uk.ac.kcl.language.fsql.xpect.XPectTests END_SETUP */
+/*
+XPECT generated ---
+CREATE DATABASE DB1;
+
+USE DB1;
+
+CREATE TABLE Table1(
+	id INT PRIMARY KEY,
+	name VARCHAR(255),
+	isAdult NUMBER(1),
+	age INT
+);
+DROP TABLE Table1;
+---
+*/
+ 
+create database DB1
+
+use database DB1
+
+Table1.init() 
+
+Table1.schema(id:INT as primary key, name : STRING, isAdult: BOOL, age: INT)
+
+Table1.drop()

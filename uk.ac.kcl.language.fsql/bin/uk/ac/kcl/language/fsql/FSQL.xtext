@@ -75,7 +75,6 @@ UseDB:
 	'use' 'database' database=DatabaseReferece
 ;
 
-
 InitTable :
 	 name=ID '.' 'init()'
 ;

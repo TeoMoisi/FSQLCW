@@ -1,0 +1,79 @@
+import uk.ac.kcl.language.fsql.validation.AbstractFSQLValidator
+import uk.ac.kcl.language.fsql.fSQL.ColumnValueType
+import uk.ac.kcl.language.fsql.fSQL.IntType
+import uk.ac.kcl.language.fsql.fSQL.RealType
+import uk.ac.kcl.language.fsq.typing.FSQLType
+import uk.ac.kcl.language.fsql.fSQL.AssignColumnValue
+import uk.ac.kcl.language.fsql.fSQL.StringType
+import uk.ac.kcl.language.fsql.fSQL.BoolType
+import uk.ac.kcl.language.fsql.fSQL.Condition
+
+system uk.ac.kcl.language.fsql.typing.FSQLTypeSystem
+
+validatorExtends AbstractFSQLValidator
+
+auxiliary {
+	typeExpressions(Iterable<ColumnValueType> exps) : FSQLType cached
+}
+
+judgments {
+	type |- ColumnValueType exp : output FSQLType
+		cached
+		error "cannot type " + stringRep(exp)
+	subType |- FSQLType left <: FSQLType right
+		error stringRep(left) + " is not a subtype of " + stringRep(right)
+}
+
+auxiliary typeExpressions(Iterable<ColumnValueType> exps) {
+	if (exps.forall[exp | 
+			empty |- exp : var FSQLType exp2Type 
+			exp2Type === FSQLType.INT]) {
+		return FSQLType.INT			
+	} else if (exps.forall[exp | 
+			empty |- exp : var FSQLType exp2Type 
+			exp2Type === FSQLType.FLOAT]){
+		return FSQLType.FLOAT
+	} else if (exps.forall[exp | 
+			empty |- exp : var FSQLType exp2Type 
+			exp2Type === FSQLType.STRING]){
+		return FSQLType.INT
+	} else {
+		return FSQLType.INT
+	}
+}
+
+
+rule SubTyping
+	G |- FSQLType left <: FSQLType right
+from {
+	right === FSQLType.FLOAT or left === right
+}
+
+axiom IntLiteral 
+	G |- IntType decl : FSQLType.INT
+	
+axiom RealLiteral 
+	G |- RealType decl : FSQLType.FLOAT
+	
+// both STRING and BOOL return INT because we only want to compare INT and FLOAT types
+axiom StringLiteral 
+	G |- StringType decl : FSQLType.INT
+	
+axiom BoolLiteral 
+	G |- BoolType decl : FSQLType.INT
+	
+checkrule checkAssignColumnValue for
+	AssignColumnValue stmt
+from {
+	empty |- stmt.value : var FSQLType colType
+	empty |- colType <: FSQLType.INT
+}
+
+checkrule checkCondition for
+	Condition cond
+from {
+	if (cond.^condition.getName() === 'eq') {
+		empty |- cond.value : var FSQLType colType
+		empty |- colType <: FSQLType.INT
+	}
+}
