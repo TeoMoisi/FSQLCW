@@ -6,13 +6,13 @@ CREATE TABLE Table1(
 	id INT PRIMARY KEY,
 	name VARCHAR(255),
 	isAdult NUMBER(1),
-	age INT
+	age FLOAT
 );
 ALTER TABLE Table1
 ADD age INT;
 
-INSERT INTO Table1 (id,name,age,isAdult) VALUES (8,"Teofana Moisi",65,true);
-INSERT INTO Table1 (name,age,isAdult) VALUES ("John",7,false), (9,"Julia",10,false);
+INSERT INTO Table1 (id,name,age) VALUES (8,"Teofana Moisi",65);
+INSERT INTO Table1 (id,name,isAdult) VALUES (9,"John",false), (9,"Julia",10,false);
 DELETE FROM Table1 WHERE age=
 1
  AND id<
@@ -110,7 +110,7 @@ SET age=6
 ;
 DROP TABLE Table3;
 
-INSERT INTO Table1 (id,name,age,isAdult) VALUES (8,"Jane",65,true);
+INSERT INTO Table1 (id,name,age,isAdult) VALUES (8,"John",65,true);
 SELECT * FROM Table1;
 
 ALTER TABLE Table1

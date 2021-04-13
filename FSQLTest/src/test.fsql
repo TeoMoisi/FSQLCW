@@ -1,18 +1,14 @@
-// create database DB1
-//
 create database DB1
 
 use database DB1
 
 Table1.init() 
-//
-Table1.schema(id:INT as primary key, name : STRING, isAdult: BOOL, age: INT)
 
-Table1.addColumn(age:INT)
-//
-Table1.addRow({id= 8, name = "Teofana Moisi",age = 65, isAdult= true})
-//
-Table1.addRows({name = "John",age=7, isAdult = false},{id = 9, name="Julia" ,age=10, isAdult = false})
+Table1.schema(id:INT as primary key, name : STRING, isAdult: BOOL, age: FLOAT)
+
+Table1.addRow({id= 8, name = "Teofana Moisi",age = 65})
+
+Table1.addRows({id = 9, name = "John", isAdult = false},{id = 9.8, name="John" ,age=10, isAdult = false})
 
 //// error if we want to access col1
 //// Table1.where(col1 lt 6).delete()
@@ -20,8 +16,8 @@ Table1.addRows({name = "John",age=7, isAdult = false},{id = 9, name="Julia" ,age
 
 Table1.where(age eq 1 AND id lt 6 OR name eq "Teofana").delete()
 
-Table1.where(id gt 8 AND name eq "teo").update(age = 8,name="bjhbjh",address="jksnv")
-//
+Table1.where(id gt 8 AND name eq "Teofana").update(age = 8,name="Teo",address="Adr.1")
+
 Table1.where(age lt 20).select(age).groupBy(address)
 Table1.where(age gt 20).select(age).min()
 Table1.where(age lt 20).select(age).count()
@@ -72,7 +68,7 @@ Table3.update(age = 6,name="John")
 
 Table3.drop()
 
-Table1.addRow({id= 8, name = "Jane",age = 65, isAdult= true})
+Table1.addRow({id= 8, name = "John",age = 65, isAdult= true})
 
 Table1.*
 

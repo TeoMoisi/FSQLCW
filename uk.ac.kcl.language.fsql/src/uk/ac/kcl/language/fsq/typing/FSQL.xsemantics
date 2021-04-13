@@ -13,18 +13,18 @@ system uk.ac.kcl.language.fsql.typing.FSQLTypeSystem
 validatorExtends AbstractFSQLValidator
 
 auxiliary {
-	typeExpressions(Iterable<ColumnValueType> exps) : FSQLType cached
+	columnType(Iterable<ColumnValueType> exps) : FSQLType cached
 }
 
 judgments {
 	type |- ColumnValueType exp : output FSQLType
 		cached
-		error "cannot type " + stringRep(exp)
+		error "cannot use type " + stringRep(exp)
 	subType |- FSQLType left <: FSQLType right
 		error stringRep(left) + " is not a subtype of " + stringRep(right)
 }
 
-auxiliary typeExpressions(Iterable<ColumnValueType> exps) {
+auxiliary columnType(Iterable<ColumnValueType> exps) {
 	if (exps.forall[exp | 
 			empty |- exp : var FSQLType exp2Type 
 			exp2Type === FSQLType.INT]) {
