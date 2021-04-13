@@ -10,7 +10,7 @@ CREATE TABLE Table1(
 );
 INSERT INTO Table1 (id,name,age,isAdult) VALUES (8,Teofana Moisi,65,true);
 INSERT INTO Table1 (id,name,age,isAdult) VALUES (9,John,7,false), (9,Julia,10,false);
-DELETE FROM Table1 WHERE age<=1
+DELETE FROM Table1 WHERE age=1
  AND id<6
  OR name=Teofana
 ;

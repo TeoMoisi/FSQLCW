@@ -11,14 +11,14 @@ Table1.schema(id:INT as primary key, name : STRING, isAdult: BOOL, age: INT)
 
 //Table1.addColumn(age:INT)
 //
-Table1.addRow({id= 8, name = "Teofana Moisi",age = 65.6, isAdult=true})
+Table1.addRow({id= 8, name = "Teofana Moisi",age = 65, isAdult=true})
 //
 Table1.addRows({id = 9, name = "John",age=7, isAdult = false},{id = 9, name="Julia" ,age=10, isAdult = false})
 //
 ////// error if we want to access col1
 ////// Table1.where(col1 lt 6).delete()
 ////
-Table1.where(age eq 1.8 AND id lt 6 OR name eq 'Teofana').delete()
+Table1.where(age eq 1 AND id lt 6 OR name eq 'Teofana').delete()
 //
 //Table1.delete()
 //

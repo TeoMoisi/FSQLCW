@@ -5,6 +5,8 @@ Bundle-SymbolicName: uk.ac.kcl.language.fsql.xpect
 Bundle-Version: 1.0.0.qualifier
 Automatic-Module-Name: uk.ac.kcl.language.fsql.xpect
 Bundle-RequiredExecutionEnvironment: JavaSE-11
-Require-Bundle: uk.ac.kcl.language.fsql;bundle-version="1.0.0",
- uk.ac.kcl.language.fsql.ui;bundle-version="1.0.0",
- org.eclipse.xpect.xtext.lib;bundle-version="0.2.0"
+Require-Bundle: uk.ac.kcl.language.fsql.ui;bundle-version="1.0.0",
+ org.eclipse.xpect.xtext.lib;bundle-version="0.2.0",
+ org.eclipse.xtext.xbase.lib;bundle-version="2.25.0",
+ uk.ac.kcl.language.fsql;bundle-version="1.0.0",
+ it.xsemantics.runtime;bundle-version="1.10.2"
