@@ -11,7 +11,7 @@ Table1.schema(id:INT as primary key, name : STRING, isAdult: BOOL, age: INT)
 
 //Table1.addColumn(age:INT)
 //
-Table1.addRow({id= 8, name = "Teofana Moisi",age = 65, isAdult=true})
+Table1.addRow({id= 8, name = "Teofana Moisi",age = 65, isAdult= true})
 //
 Table1.addRows({id = 9, name = "John",age=7, isAdult = false},{id = 9, name="Julia" ,age=10, isAdult = false})
 //
