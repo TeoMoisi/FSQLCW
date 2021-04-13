@@ -18,13 +18,13 @@ Table1.addRows({id = 9, name = "John",age=7, isAdult = false},{id = 9, name="Jul
 ////// error if we want to access col1
 ////// Table1.where(col1 lt 6).delete()
 ////
-Table1.where(age eq 1 AND id lt 6 OR name eq 'Teofana').delete()
+Table1.where(age eq 1 AND id lt 6 OR name eq "Teofana").delete()
 //
 //Table1.delete()
 //
 //Table1.update(age = 6,name="Roadhbjhv")
 //
-//Table1.where(id gt 8 AND name eq "teo").update(age = 8,name="bjhbjh",address="jksnv")
+Table1.where(id gt 8 AND name eq "teo").update(age = 8,name="bjhbjh",address="jksnv")
 //
 //Table1.where(age lt 20).select(age).groupBy(address)
 //Table1.where(age gt 20).select(age).min()
@@ -57,9 +57,9 @@ Table2.schema(id:INT as primary key, name : STRING, name references Table1)
 
 Table2.addRow({id = 8, name = "Teofana Moisi"})
 //
-//Table1.innerJoin(Table2).on(Table1.name = Table2.name).where(id eq 1).select(name, age)
-//Table1.leftJoin(Table2).on(Table1.name = Table2.name).select(name,age)
-//
+Table1.innerJoin(Table2).on(Table1.name = Table2.name).where(id eq 1).select(name, age)
+Table1.leftJoin(Table2).on(Table1.name = Table2.name).select(name,age)
+
 Table3.init()
 
 //

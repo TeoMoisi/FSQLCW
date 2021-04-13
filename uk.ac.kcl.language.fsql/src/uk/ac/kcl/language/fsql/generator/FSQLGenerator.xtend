@@ -139,7 +139,11 @@ class FSQLGenerator extends AbstractGenerator {
 	«assignColumn.column.generateSQLColumnNameReference»'''
 	
 	def String generateAssignColumnValue(AssignColumnValue assignColumn)'''
-	«assignColumn.value.toString().split('val: ').get(1).substring(0, assignColumn.value.toString().split('val: ').get(1).length - 1)»'''
+	«if (assignColumn.value.toString().contains("String")) {
+		'"' + assignColumn.value.toString().split('val: ').get(1).substring(0, assignColumn.value.toString().split('val: ').get(1).length - 1) + '"'
+	} else {
+		assignColumn.value.toString().split('val: ').get(1).substring(0, assignColumn.value.toString().split('val: ').get(1).length - 1)
+	}»'''
 	
 	def String generateAssignColumn(AssignColumnValue assignColumn)'''
 	«assignColumn.generateAssignColumnName»=«assignColumn.generateAssignColumnValue»'''
@@ -173,8 +177,12 @@ class FSQLGenerator extends AbstractGenerator {
 		}»'''
 	
 	def String generateQuery(Condition condition)'''
-	«condition.getColumn().generateSQLColumnNameReference»«condition.getCondition().generateConditionValue»«condition.getValue().toString().split(' ').get(2).substring(0, condition.getValue().toString().split(' ').get(2).length - 1)»
-	'''
+		«condition.getColumn().generateSQLColumnNameReference»«condition.getCondition().generateConditionValue»
+		«if (condition.getValue().toString().contains("String")) {
+			'"' + condition.getValue().toString().split(' ').get(2).substring(0, condition.getValue().toString().split(' ').get(2).length - 1) + '"'
+		} else {
+			condition.getValue().toString().split(' ').get(2).substring(0, condition.getValue().toString().split(' ').get(2).length - 1)
+		}»'''
 	
 	def String generateConditionValue(ConditionOperator cond)'''
 	«if (cond == ConditionOperator.LT) 
