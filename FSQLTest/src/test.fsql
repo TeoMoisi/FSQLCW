@@ -1,61 +1,54 @@
-// create database DB1
-//
 create database DB1
 
 use database DB1
 
 Table1.init() 
 
+Table1.schema(id:INT as primary key, name : STRING, isAdult: BOOL, age: FLOAT)
 
-Table1.schema(id:INT as primary key, name : STRING, isAdult: BOOL, age: INT)
+Table1.addRow({id= 8, name = "Teofana Moisi",age = 65})
 
-//Table1.addColumn(age:INT)
+Table1.addRows({id = 9, name = "John", isAdult = false},{id = 9.8, name="John" ,age=10, isAdult = false})
+
+//// error if we want to access col1
+//// Table1.where(col1 lt 6).delete()
 //
-Table1.addRow({id= 8, name = "Teofana Moisi",age = 65, isAdult= true})
-//
-Table1.addRows({id = 9, name = "John",age=7, isAdult = false},{id = 9, name="Julia" ,age=10, isAdult = false})
-//
-////// error if we want to access col1
-////// Table1.where(col1 lt 6).delete()
-////
+
 Table1.where(age eq 1 AND id lt 6 OR name eq "Teofana").delete()
+
+Table1.where(id gt 8 AND name eq "Teofana").update(age = 8,name="Teo",address="Adr.1")
+
+Table1.where(age lt 20).select(age).groupBy(address)
+Table1.where(age gt 20).select(age).min()
+Table1.where(age lt 20).select(age).count()
+Table1.where(age gt 20).select(age).sum()
+
+Table1.select(age).min()
+
+Table1.where(age gt 10).select(address).groupBy(address)
+
+Table1.select(name, age).orderBy(age,asc)
 //
-//Table1.delete()
+Table1.select(name, age).groupBy(age).orderBy(age,asc)
+
+Table1.select(Table1.name, age)
+
+Table1.*
+
+Table1.addColumn(col3:BOOL)
+
+Table1.addColumns(col4:FLOAT,(col3,col4) as primary key,col5:INT)
+
+Table1.dropColumn(col3)
+Table1.dropColumns(col4,col3)
 //
-//Table1.update(age = 6,name="Roadhbjhv")
-//
-Table1.where(id gt 8 AND name eq "teo").update(age = 8,name="bjhbjh",address="jksnv")
-//
-//Table1.where(age lt 20).select(age).groupBy(address)
-//Table1.where(age gt 20).select(age).min()
-////Table1.where(age lt 20).select(age).count()
-////Table1.where(age gt 20).select(age).sum()
-//Table1.select(age).min()
-//
-//Table1.where(age gt 10).select(address).groupBy(address)
-//
-//Table1.select(name, age).orderBy(age,asc)
-////
-//Table1.select(name, age).groupBy(age).orderBy(age,asc)
-//
-//Table1.select(Table1.name, age)
-//
-//Table1.*
-//
-//Table1.addColumn(col3:BOOL)
-//
-//Table1.addColumns(col4:FLOAT,(col3,col4) as primary key,col5:INT)
-//
-//Table1.dropColumn(col3)
-//Table1.dropColumns(col4,col3)
-//
-//Table1.modify(col4:BOOL,col5:STRING)
-//
+Table1.modify(col4:BOOL,col5:STRING)
+
 Table2.init()
 
 Table2.schema(id:INT as primary key, name : STRING, name references Table1)
 
-Table2.addRow({id = 8, name = "Teofana Moisi"})
+Table2.addRow({id = 8, name = "Andrew"})
 //
 Table1.innerJoin(Table2).on(Table1.name = Table2.name).where(id eq 1).select(name, age)
 Table1.leftJoin(Table2).on(Table1.name = Table2.name).select(name,age)
@@ -66,4 +59,24 @@ Table3.init()
 Table3.schema(address:STRING, name:STRING, city: STRING, (address, name, city) as primary key)
 
 Table1.drop()
+
+Table1.delete()
+
+Table3.drop()
+
+Table3.update(age = 6,name="John")
+
+Table3.drop()
+
+Table1.addRow({id= 8, name = "John",age = 65, isAdult= true})
+
+Table1.*
+
+Table1.addColumn(age:INT)
+
+Table1.select(name, age).orderBy(age,asc)
+
+Table1.modify(col4:BOOL,col5:STRING)
+
+
 
