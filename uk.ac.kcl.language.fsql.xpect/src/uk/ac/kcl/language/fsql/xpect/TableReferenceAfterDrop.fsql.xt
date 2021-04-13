@@ -1,0 +1,26 @@
+/* XPECT_SETUP uk.ac.kcl.language.fsql.xpect.XPectTests END_SETUP */
+
+create database DB1
+
+use database DB1
+
+Table1.init() 
+
+Table1.schema(id:INT as primary key, name : STRING, isAdult: BOOL, age: INT)
+
+Table1.drop()
+
+// XPECT warnings --> "Cannot reference table after drop!" at "Table1"
+Table1.*
+
+// XPECT warnings --> "Cannot reference table after drop!" at "Table1"
+Table1.select(name, age).orderBy(age,asc)
+
+Table2.init()
+
+Table2.schema(id:INT as primary key, name : STRING, name references Table1)
+
+Table2.drop()
+
+// XPECT warnings --> "Cannot reference table after drop!" at "Table2"
+Table2.addRow({id = 8, name = "Jane"})

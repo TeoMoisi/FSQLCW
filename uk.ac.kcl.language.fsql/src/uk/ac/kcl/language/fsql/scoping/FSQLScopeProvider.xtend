@@ -3,7 +3,6 @@
  */
 package uk.ac.kcl.language.fsql.scoping
 
-
 /**
  * This class contains custom scoping description.
  * 
@@ -11,5 +10,5 @@ package uk.ac.kcl.language.fsql.scoping
  * on how and when to use it.
  */
 class FSQLScopeProvider extends AbstractFSQLScopeProvider {
-
+	
 }
