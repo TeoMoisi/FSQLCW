@@ -255,15 +255,15 @@ class FSQLGenerator extends AbstractGenerator {
 	 
 	 def String generateAggregation(Aggregation aggregation)'''
 	 «if (aggregation.aggregation.toString() == 'max()') {
-	 	'MAX(*)'
+	 	'MAX'
 	 } else if (aggregation.aggregation.toString() == 'min()') { 
-	 	'MIN(*)'
+	 	'MIN'
 	 } else if (aggregation.aggregation.toString() == 'count()') {
-	 	'COUNT(*)'
+	 	'COUNT'
 	 } else if (aggregation.aggregation.toString() == 'sum()'){
-	 	'SUM(*)'
+	 	'SUM'
 	 } else {
-	 	'AVG(*)'
+	 	'AVG'
 	 }»'''
 	 
 	 dispatch def String generateSelect(GroupedSelect select, String table)'''
@@ -330,7 +330,7 @@ class FSQLGenerator extends AbstractGenerator {
 	 «select.select.generateQuerySelect(table, whereClause)» «select.groupBy.generateGroupBy» «select.orderBy.generateOrderBy»;'''
 	 
 	 dispatch def String generateQuerySelect(AggregatedSelect select, String table, WhereClause whereClause)'''
-	 SELECT «select.aggregation.generateAggregation», «select.select.column.generateSQLColumnNameReference» FROM «table» «whereClause.generateWhereClause»'''
+	 SELECT «select.aggregation.generateAggregation»( «select.select.column.generateSQLColumnNameReference» ) FROM «table» «whereClause.generateWhereClause»'''
 	 
 	 dispatch def String generateSQLTableCommand(Join join)'''
 	 SELECT «join.selection.generateJoinSelect» FROM «join.table1.^var.name» «join.joinType.generateJoin» «join.table2.^var.name» ON «join.joinCondition.map[generateJoinCondition].join('')» 

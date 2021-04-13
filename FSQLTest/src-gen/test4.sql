@@ -8,7 +8,10 @@ CREATE TABLE Users(
 	age INT,
 	isAdult NUMBER(1)
 );
-SELECT COUNT(*), name FROM Users WHERE city=
+SELECT COUNT( name ) FROM Users WHERE city=
 "London"
  AND age=
 20
+
+SELECT MAX( age ) FROM Users WHERE city=
+"London"

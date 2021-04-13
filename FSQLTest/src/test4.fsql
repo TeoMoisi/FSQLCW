@@ -12,5 +12,7 @@ Users.schema(
 
 Users.where(city eq "London" AND age eq 20).select(name).count()
 
+Users.where(city eq "London").select(age).max()
+
 
 
