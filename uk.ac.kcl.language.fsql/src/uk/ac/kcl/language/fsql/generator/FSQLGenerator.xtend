@@ -140,7 +140,7 @@ class FSQLGenerator extends AbstractGenerator {
 	
 	def String generateAssignColumnValue(AssignColumnValue assignColumn)'''
 	«if (assignColumn.value.toString().contains("String")) {
-		'"' + assignColumn.value.toString().split('val: ').get(1).substring(0, assignColumn.value.toString().split('val: ').get(1).length - 1) + '"'
+		"'" + assignColumn.value.toString().split('val: ').get(1).substring(0, assignColumn.value.toString().split('val: ').get(1).length - 1) + "'"
 	} else {
 		assignColumn.value.toString().split('val: ').get(1).substring(0, assignColumn.value.toString().split('val: ').get(1).length - 1)
 	}»'''

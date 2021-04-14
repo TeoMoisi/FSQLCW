@@ -6,7 +6,7 @@ CREATE TABLE Users(
 	userId INT PRIMARY KEY,
 	name VARCHAR(255),
 	age INT,
-	isAdult NUMBER(1)
+	isAdult BOOLEAN
 );
 SELECT COUNT( name ) FROM Users WHERE city=
 "London"

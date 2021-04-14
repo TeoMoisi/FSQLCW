@@ -5,11 +5,11 @@ USE DB1;
 CREATE TABLE Table1(
 	id INT PRIMARY KEY,
 	name VARCHAR(255),
-	isAdult NUMBER(1),
+	isAdult BOOLEAN,
 	age FLOAT
 );
-INSERT INTO Table1 (id,name,age) VALUES (8,"Teofana Moisi",65);
-INSERT INTO Table1 (id,name,isAdult) VALUES (9,"John",false), (9,"John",10,false);
+INSERT INTO Table1 (id,name,age) VALUES (8,'Teofana Moisi',65);
+INSERT INTO Table1 (id,name,isAdult) VALUES (9,'John',false), (9,'John',10,false);
 DELETE FROM Table1 WHERE age=
 1
  AND id<
@@ -18,7 +18,7 @@ DELETE FROM Table1 WHERE age=
 ;
 UPDATE Table1
 SET age=8
-,name="Teo",address="Adr.1"
+,name='Teo',address='Adr.1'
 WHERE id>
 8
  AND name=
@@ -64,7 +64,7 @@ SELECT Table1.name
 SELECT * FROM Table1;
 
 ALTER TABLE Table1
-ADD col3 NUMBER(1);
+ADD col3 BOOLEAN;
 
 ALTER TABLE Table1
 ADD (col4 FLOAT,PRIMARY KEY (col3,col4),col5 INT);
@@ -76,15 +76,15 @@ ALTER TABLE Table1
 DROP COLUMN (col4,col3);
 
 ALTER TABLE Table1
-MODIFY (col4 NUMBER(1),col5 VARCHAR(255));
+MODIFY (col4 BOOLEAN,col5 VARCHAR(255));
 
 
 CREATE TABLE Table2(
 	id INT PRIMARY KEY,
 	name VARCHAR(255),
-	FOREIGN KEY name REFERENCES Table1(name)
+	FOREIGN KEY (name) REFERENCES Table1(name)
 );
-INSERT INTO Table2 (id,name) VALUES (8,"Andrew");
+INSERT INTO Table2 (id,name) VALUES (8,'Andrew');
 SELECT name
 ,age
  FROM Table1 INNER JOIN
@@ -109,11 +109,11 @@ DROP TABLE Table3;
 
 UPDATE Table3
 SET age=6
-,name="John"
+,name='John'
 ;
 DROP TABLE Table3;
 
-INSERT INTO Table1 (id,name,age,isAdult) VALUES (8,"John",65,true);
+INSERT INTO Table1 (id,name,age,isAdult) VALUES (8,'John',65,true);
 SELECT * FROM Table1;
 
 ALTER TABLE Table1
@@ -125,4 +125,4 @@ ASC
 ;
 
 ALTER TABLE Table1
-MODIFY (col4 NUMBER(1),col5 VARCHAR(255));
+MODIFY (col4 BOOLEAN,col5 VARCHAR(255));
