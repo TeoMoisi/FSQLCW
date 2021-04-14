@@ -8,11 +8,8 @@ CREATE TABLE Table1(
 	isAdult NUMBER(1),
 	age FLOAT
 );
-ALTER TABLE Table1
-ADD age INT;
-
 INSERT INTO Table1 (id,name,age) VALUES (8,"Teofana Moisi",65);
-INSERT INTO Table1 (id,name,isAdult) VALUES (9,"John",false), (9,"Julia",10,false);
+INSERT INTO Table1 (id,name,isAdult) VALUES (9,"John",false), (9,"John",10,false);
 DELETE FROM Table1 WHERE age=
 1
  AND id<
@@ -21,11 +18,11 @@ DELETE FROM Table1 WHERE age=
 ;
 UPDATE Table1
 SET age=8
-,name="bjhbjh",address="jksnv"
+,name="Teo",address="Adr.1"
 WHERE id>
 8
  AND name=
-"teo"
+"Teofana"
 ;
 SELECT age
  FROM Table1 WHERE age<
@@ -33,8 +30,14 @@ SELECT age
  GROUP BY address
 ;
 
+SELECT MIN( age ) FROM Table1 WHERE age>
+20
 
+SELECT COUNT( age ) FROM Table1 WHERE age<
+20
 
+SELECT SUM( age ) FROM Table1 WHERE age>
+20
 
 SELECT MIN(age) FROM Table1;
 

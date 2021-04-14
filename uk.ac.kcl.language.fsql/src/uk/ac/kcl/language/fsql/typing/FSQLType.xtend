@@ -1,4 +1,4 @@
-package uk.ac.kcl.language.fsq.typing
+package uk.ac.kcl.language.fsql.typing
 
 enum FSQLType {
 	INT,

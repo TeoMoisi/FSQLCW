@@ -2,7 +2,7 @@ import uk.ac.kcl.language.fsql.validation.AbstractFSQLValidator
 import uk.ac.kcl.language.fsql.fSQL.ColumnValueType
 import uk.ac.kcl.language.fsql.fSQL.IntType
 import uk.ac.kcl.language.fsql.fSQL.RealType
-import uk.ac.kcl.language.fsq.typing.FSQLType
+import uk.ac.kcl.language.fsql.typing.FSQLType
 import uk.ac.kcl.language.fsql.fSQL.AssignColumnValue
 import uk.ac.kcl.language.fsql.fSQL.StringType
 import uk.ac.kcl.language.fsql.fSQL.BoolType
