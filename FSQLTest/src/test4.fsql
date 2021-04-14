@@ -1,0 +1,18 @@
+create database FSQLTEST
+use database FSQLTEST
+
+Users.init()
+
+Users.schema(
+	userId: INT as primary key,
+	name: STRING,
+	age: INT,
+	isAdult: BOOL
+)
+
+Users.where(city eq "London" AND age eq 20).select(name).count()
+
+Users.where(city eq "London").select(age).max()
+
+
+

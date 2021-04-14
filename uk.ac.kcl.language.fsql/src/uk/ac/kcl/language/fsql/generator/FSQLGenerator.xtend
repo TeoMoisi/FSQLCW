@@ -329,8 +329,8 @@ class FSQLGenerator extends AbstractGenerator {
 	 dispatch def String generateQuerySelect(GroupSortedSelect select, String table, WhereClause whereClause)'''
 	 «select.select.generateQuerySelect(table, whereClause)» «select.groupBy.generateGroupBy» «select.orderBy.generateOrderBy»;'''
 	 
-//	 dispatch def String generateQuerySelect(AggregatedSelect select, String table, WhereClause whereClause)'''
-//	 SELECT «select.aggregation.generateAggregation»(«select.select.column.generateSQLColumnNameReference») FROM «table» «whereClause.generateWhereClause»'''
+	 dispatch def String generateQuerySelect(AggregatedSelect select, String table, WhereClause whereClause)'''
+	 SELECT «select.aggregation.generateAggregation»( «select.select.column.generateSQLColumnNameReference» ) FROM «table» «whereClause.generateWhereClause»'''
 	 
 	 dispatch def String generateSQLTableCommand(Join join)'''
 	 SELECT «join.selection.generateJoinSelect» FROM «join.table1.^var.name» «join.joinType.generateJoin» «join.table2.^var.name» ON «join.joinCondition.map[generateJoinCondition].join('')» 
