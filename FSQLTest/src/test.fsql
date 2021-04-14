@@ -8,7 +8,7 @@ Table1.schema(id:INT as primary key, name : STRING, isAdult: BOOL, age: FLOAT)
 
 Table1.addRow({id= 8, name = "Teofana Moisi",age = 65})
 
-Table1.addRows({id = 9, name = "John", isAdult = false},{id = 9.8, name="John" ,age=10, isAdult = false})
+Table1.addRows({id = 9, name = "John", isAdult = false},{id = 9, name="John" ,age=10, isAdult = false})
 
 //// error if we want to access col1
 //// Table1.where(col1 lt 6).delete()
