@@ -125,7 +125,7 @@ class FSQLGenerator extends AbstractGenerator {
 	
 	dispatch def String generateSQLColumns(PrimaryKey column)'''«column.column.generateSQLColumns» PRIMARY KEY'''
 	
-	dispatch def String generateSQLColumns(ForeignKey column)'''FOREIGN KEY «column.getColumn().generateSQLColumnNameReference» REFERENCES «column.table.get(0).^var.name»(«column.getColumn().generateSQLColumnNameReference»)'''
+	dispatch def String generateSQLColumns(ForeignKey column)'''FOREIGN KEY («column.getColumn().generateSQLColumnNameReference») REFERENCES «column.table.get(0).^var.name»(«column.getColumn().generateSQLColumnNameReference»)'''
 	
 	dispatch def String generateSQLColumns(CompositeKey column)'''PRIMARY KEY («column.getColumn().generateSQLColumnNameReference»«',' + column.getColumns().map[generateSQLColumnNameReference].join(',')»)'''
 	
