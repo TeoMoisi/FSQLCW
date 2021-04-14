@@ -121,7 +121,7 @@ class FSQLGenerator extends AbstractGenerator {
 	// this will generate SQL code for each column declaration
 	dispatch def String generateSQLColumns(ColumnDeclaration column)''''''
 	
-	dispatch def String generateSQLColumns(SimpleDeclaration column)'''«column.getName» «if (column.type === ColumnType.BOOL) {'''NUMBER(1)'''} else if (column.type === ColumnType.STRING) {'''VARCHAR(255)'''} else {column.type}»'''
+	dispatch def String generateSQLColumns(SimpleDeclaration column)'''«column.getName» «if (column.type === ColumnType.BOOL) {'''BOOLEAN'''} else if (column.type === ColumnType.STRING) {'''VARCHAR(255)'''} else {column.type}»'''
 	
 	dispatch def String generateSQLColumns(PrimaryKey column)'''«column.column.generateSQLColumns» PRIMARY KEY'''
 	
