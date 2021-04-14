@@ -46,7 +46,7 @@ class FSQLValidator extends FSQLTypeSystemValidator {
 	public static val INVALID_TABLE_DECLARATION = 'cannot reference table';
 
 
-	@Check(NORMAL)
+	@Check
 	def checkProgramStartsWithDB(FSQL program) {
 			if (program.dbStatements.length < 1) {
 				error('Missing database use', 
