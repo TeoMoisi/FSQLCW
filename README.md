@@ -30,7 +30,7 @@ Go to FSQL.xtext file and:
     ![Screenshot 2021-04-13 at 21 50 52](https://user-images.githubusercontent.com/34157782/114608476-66e94580-9ca6-11eb-9d2e-f142f249bcf8.png)
 
     - select the directory in which you cloned the project
-    - then select FSQLTest and uk.ac.kcl.language.fsql.xpect folders
+    - then select FSQLTest(Xtext project containing .fsql files) and uk.ac.kcl.language.fsql.xpect(Xpect project containing tests) folders
 
     ![Screenshot 2021-04-13 at 21 55 49](https://user-images.githubusercontent.com/34157782/114608544-78cae880-9ca6-11eb-8e12-3ee709d44726.png)
 

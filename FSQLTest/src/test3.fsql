@@ -1,0 +1,41 @@
+create database FSQLTEST
+use database FSQLTEST
+
+Users.init()
+
+Users.schema(
+	userId: INT as primary key,
+	name: STRING,
+	age: INT,
+	isAdult: BOOL
+)
+
+Posts.init()
+Posts.schema(
+	postId: INT as primary key,
+	userId: INT,
+	userId references Users,
+	content: STRING
+)
+
+Users.addColumns(city: STRING, occupation: STRING)
+Users.dropColumn(occupation)
+
+Users.addRows(
+	{userId=1, name="John Doe", age=16, isAdult=false, city="London"},
+	{userId=2, name="Jane Doe", age=20, isAdult=true, city="London"},
+	{userId=3, name="Jonny Doe", age=20, isAdult=true, city="Liverpool"},
+	{userId=4, name="Mark Doe", age=22, isAdult=true, city="London"},
+	{userId=5, name="Steve Doe", age=35, isAdult=true, city="London"}
+)
+
+Users.where(age gte 20).select(name, city)
+
+Users.where(age lt 20 AND city eq "London").delete()
+
+Users.innerJoin(Posts).on(Posts.postId = Users.userId)
+	.select(postId, userId, content)
+
+Users.where(city eq "London").update(city="LONDON")
+
+Users.select(name, age).groupBy(city).having(age gte 20).orderBy(age)
